@@ -1,0 +1,31 @@
+﻿@model REMOVED.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<h1>Login</h1>
+
+<!-- Mensagens de erro gerais -->
+@Html.ValidationSummary(REMOVED, "", new { @class = "text-danger" })
+
+<form asp-action="Login" method="post">
+    <div>
+        <label>Email</label>
+        <input asp-for="Email" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div>
+        <label>Password</label>
+        <input asp-for="Password" type="password" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <div>
+        <input asp-for="RememberMe" type="checkbox" />
+        <label>Remember me</label>
+        <br />
+        <p>
+            <a asp-action="ForgotPassword" asp-controller="Account">Forgot your password?</a>
+        </p>
+    </div>
+    <button type="submit">Login</button>
+</form>
