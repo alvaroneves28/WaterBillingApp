@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using REMOVED.Data.Entities;
-using REMOVED.Models; // onde vais criar o viewmodel
+using WaterBillingApp.Data.Entities;
+using WaterBillingApp.Models; // onde vais criar o viewmodel
 
 [Authorize]
 public class ManageController : Controller

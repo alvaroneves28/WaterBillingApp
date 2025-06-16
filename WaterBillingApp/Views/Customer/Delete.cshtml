@@ -1,0 +1,12 @@
+﻿@model WaterBillingApp.Data.Entities.Customer
+
+<h1>Confirmar eliminação</h1>
+
+<p>Tem certeza que deseja apagar o cliente: <strong>@Model.FullName</strong>?</p>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Sim, apagar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
+

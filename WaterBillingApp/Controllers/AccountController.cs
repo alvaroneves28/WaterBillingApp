@@ -1,13 +1,16 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using REMOVED.Data;
-using REMOVED.Data.Entities;
-using REMOVED.Helpers;
-using REMOVED.Models;
+using System.Diagnostics;
+using System.Net;
+using WaterBillingApp.Data;
+using WaterBillingApp.Data.Entities;
+using WaterBillingApp.Helpers;
+using WaterBillingApp.Models;
 
-namespace REMOVED.Controllers
+namespace WaterBillingApp.Controllers
 {
     public class AccountController : Controller
     {
@@ -15,13 +18,15 @@ namespace REMOVED.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ApplicationDbContext _context;
         private readonly IEmailSender _emailSender;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ApplicationDbContext context, IEmailSender emailSender)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ApplicationDbContext context, IEmailSender emailSender, IWebHostEnvironment webHostEnvironment)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _context = context;
             _emailSender = emailSender;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [HttpGet]
@@ -30,13 +35,14 @@ namespace REMOVED.Controllers
             return View();
         }
 
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
 
-            // 🔍 Obter o utilizador pelo email
+            // Obter o utilizador pelo email
             var user = await _userManager.FindByEmailAsync(model.Email);
 
             if (user == null)
@@ -45,7 +51,7 @@ namespace REMOVED.Controllers
                 return View(model);
             }
 
-            // ❌ Verificar se o email foi confirmado
+            // Verificar se o email foi confirmado
             if (!await _userManager.IsEmailConfirmedAsync(user))
             {
                 ModelState.AddModelError("", "E-mail not yet confirmed. Please check your Inbox.");
@@ -57,13 +63,23 @@ namespace REMOVED.Controllers
 
             if (result.Succeeded)
             {
-                // Redirecionar conforme o papel do utilizador
                 if (await _userManager.IsInRoleAsync(user, "Admin"))
                 {
-                    return RedirectToAction("Index", "Admin"); // Painel admin
+                    return RedirectToAction("Index", "Admin"); 
                 }
+                else if (await _userManager.IsInRoleAsync(user, "Customer"))
+                {
+                    return RedirectToAction("Index", "CustomerArea"); 
+                }
+                else if (await _userManager.IsInRoleAsync(user, "Employee"))
+                {
+                    return RedirectToAction("Index", "Employee");
+                }
+                else
+                {
 
-                return RedirectToAction("Index", "Home"); // Utilizador normal
+                    return RedirectToAction("Index", "Home");
+                }
             }
 
             ModelState.AddModelError("", "Failed Login.");
@@ -97,16 +113,21 @@ namespace REMOVED.Controllers
                 {
                     UserName = model.Email,
                     Email = model.Email,
+                    FullName = model.FullName,
+                    NIF = model.NIF,
+                    Address = model.Address,
+                    Phone = model.Phone,
+                    IsActive = model.IsActive
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password);
 
                 if (result.Succeeded)
                 {
-                    // Atribuir role ao user
+                    
                     await _userManager.AddToRoleAsync(user, model.Role);
 
-                    // Criar o Customer (se for o caso)
+                    
                     if (model.Role == "Customer")
                     {
                         var customer = new Customer
@@ -126,16 +147,14 @@ namespace REMOVED.Controllers
                         await _userManager.UpdateAsync(user);
                     }
 
-                    //  Gerar token de confirmação e enviar por email
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var confirmationLink = Url.Action("ConfirmEmail", "Account", new
-                    {
-                        userId = user.Id,
-                        token = token
-                    }, protocol: Request.Scheme);
+                    var encodedToken = WebUtility.UrlEncode(token);
+                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, token = encodedToken }, protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(user.Email, "Confirmação de Email",
-                        $"<p>Bem-vindo ao REMOVED!</p><p>Por favor confirme o seu email clicando neste <a href='{confirmationLink}'>link</a>.</p>");
+                    await _emailSender.SendEmailAsync(user.Email, "Confirme o seu email",
+                        $"Por favor confirme a sua conta clicando aqui: <a href='{callbackUrl}'>Confirmar email</a>");
+
+
 
                     ViewBag.StatusMessage = "Utilizador registado com sucesso. Um email de confirmação foi enviado.";
                     return RedirectToAction("Index", "Home");
@@ -149,33 +168,54 @@ namespace REMOVED.Controllers
             return View(model);
         }
 
-        [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
-            if (userId == null || token == null)
+            try
             {
-                return RedirectToAction("Index", "Home");
-            }
+                if (userId == null || token == null)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
 
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null)
+                {
+                    return NotFound($"Unable to load user with ID '{userId}'.");
+                }
+
+                var decodedToken = WebUtility.UrlDecode(token);
+
+                var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
+                if (result.Succeeded)
+                {
+                    var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                    var encodedResetToken = WebUtility.UrlEncode(resetToken);
+
+                    return RedirectToAction("ResetPassword", new { token = encodedResetToken, email = user.Email });
+                }
+                else
+                {
+                    var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+                    throw new Exception("Error confirming email: " + errors);
+                }
+            }
+            catch (Exception ex)
             {
-                return NotFound("User not Found.");
+                // Aqui podes passar a mensagem para a View Error
+                var model = new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+                    ErrorMessage = ex.Message
+                };
+                return View("Error", model);
             }
-
-            var result = await _userManager.ConfirmEmailAsync(user, token);
-            if (result.Succeeded)
-            {
-                TempData["StatusMessage"] = "Email successfully confirmed. You may now log in.";
-                return RedirectToAction("Login");
-            }
-
-            TempData["StatusMessage"] = "E-mail confirmation failed.";
-            return RedirectToAction("Login");
         }
 
 
+
         // GET: /Account/ForgotPassword
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult ForgotPassword()
         {
@@ -223,12 +263,13 @@ namespace REMOVED.Controllers
         }
 
         // GET: /Account/ResetPassword
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult ResetPassword(string token, string email)
         {
-            if (token == null || email == null)
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(email))
             {
-                return RedirectToAction("Index", "Home");
+                return View("Error", new ErrorViewModel { RequestId = "Invalid token or email." });
             }
 
             var model = new ResetPasswordViewModel { Token = token, Email = email };
@@ -236,6 +277,7 @@ namespace REMOVED.Controllers
         }
 
         // POST: /Account/ResetPassword
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
@@ -245,22 +287,28 @@ namespace REMOVED.Controllers
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                // Não revelar se o utilizador existe
                 TempData["StatusMessage"] = "Password reset completed.";
                 return RedirectToAction(nameof(Login));
             }
 
-            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+            var decodedToken = WebUtility.UrlDecode(model.Token);
+            var result = await _userManager.ResetPasswordAsync(user, decodedToken, model.NewPassword);
+
             if (result.Succeeded)
             {
-                TempData["StatusMessage"] = "Password reset successful.";
+                TempData["ResetPasswordStatus"] = "Password reset successful.";
                 return RedirectToAction(nameof(Login));
             }
 
-            // Mostrar erro genérico
-            TempData["StatusMessage"] = "Could not reset password. Please try again.";
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
             return View(model);
         }
+
+
 
 
         // GET: /Account/ResetPasswordConfirmation
@@ -269,6 +317,52 @@ namespace REMOVED.Controllers
         {
             return View();
         }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied(string returnUrl)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditProfile(EditProfileViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound();
+
+            if (model.ProfileImage != null && model.ProfileImage.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images/profiles");
+                Directory.CreateDirectory(uploadsFolder);
+
+                var uniqueFileName = Guid.NewGuid().ToString() + "_" + model.ProfileImage.FileName;
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.ProfileImage.CopyToAsync(fileStream);
+                }
+
+                user.ProfileImagePath = "/images/profiles/" + uniqueFileName;
+            }
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                // tratar erros (opcional)
+                ModelState.AddModelError("", "Erro ao atualizar o perfil.");
+                return View(model);
+            }
+
+            return RedirectToAction("Profile");
+        }
+
+        
+        
+
 
     }
 }

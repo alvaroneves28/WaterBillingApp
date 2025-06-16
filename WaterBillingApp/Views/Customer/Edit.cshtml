@@ -1,0 +1,46 @@
+﻿@model WaterBillingApp.Data.Entities.Customer
+
+@{
+    ViewData["Title"] = "Editar Cliente";
+}
+
+<h1>Editar Cliente</h1>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="FullName">Nome Completo</label>
+        <input asp-for="FullName" type="text" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="NIF">NIF</label>
+        <input asp-for="NIF" type="text" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Email">Email</label>
+        <input asp-for="Email" type="email" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Address">Endereço</label>
+        <input asp-for="Address" type="text" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Phone">Telefone</label>
+        <input asp-for="Phone" type="tel" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="IsActive">Status</label>
+        <select asp-for="IsActive" class="form-control">
+            <option value="true">Ativo</option>
+            <option value="false">Inativo</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">Salvar Alterações</button>
+</form>

@@ -3,7 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36127.28 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REMOVED", "REMOVED\REMOVED.csproj", "{3206B110-8F05-4F25-B5D1-E17778F6AA19}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaterBillingApp", "WaterBillingApp\WaterBillingApp.csproj", "{61F18D15-A417-A31D-AFB4-D43379A5E68A}"
+
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +12,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3206B110-8F05-4F25-B5D1-E17778F6AA19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3206B110-8F05-4F25-B5D1-E17778F6AA19}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3206B110-8F05-4F25-B5D1-E17778F6AA19}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3206B110-8F05-4F25-B5D1-E17778F6AA19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61F18D15-A417-A31D-AFB4-D43379A5E68A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61F18D15-A417-A31D-AFB4-D43379A5E68A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61F18D15-A417-A31D-AFB4-D43379A5E68A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61F18D15-A417-A31D-AFB4-D43379A5E68A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {0DA1D760-A103-4598-B445-C0F52FA91845}
+		SolutionGuid = {9852E767-82AF-4689-B3C3-CE96549F49E9}
 	EndGlobalSection
 EndGlobal

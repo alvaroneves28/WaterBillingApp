@@ -1,18 +1,23 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+<!DOCTYPE html>
+@inject UserManager<WaterBillingApp.Data.Entities.ApplicationUser> UserManager
+@{
+    var currentUser = await UserManager.GetUserAsync(User);
+}
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - REMOVED</title>
+    <title>@ViewData["Title"] - WaterBillingApp</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="REMOVED" />
-    <link rel="stylesheet" href="~/REMOVED.styles.css" asp-append-version="REMOVED" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/WaterBillingApp.styles.css" asp-append-version="true" />
 </head>
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">REMOVED</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">WaterBillingApp</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -26,6 +31,18 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
+                    @if (!string.IsNullOrEmpty(User.Identity?.Name))
+                    {
+                        var user = await UserManager.GetUserAsync(User);
+                        if (user != null && !string.IsNullOrEmpty(user.ProfileImagePath))
+                        {
+                            <img src="@user.ProfileImagePath" alt="Foto de Perfil" width="100" class="rounded-circle" />
+                        }
+                        else
+                        {
+                            <img src="/images/profiles/perfil.png" alt="Sem Foto" width="100" class="rounded-circle" />
+                        }
+                    }
                     <partial name="_LoginPartial" />
                 </div>
             </div>
@@ -39,12 +56,12 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2025 - REMOVED - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2025 - WaterBillingApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="REMOVED"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

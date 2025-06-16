@@ -2,10 +2,10 @@
 
 #nullable disable
 
-namespace REMOVED.Data.Migrations
+namespace WaterBillingApp.Migrations
 {
     /// <inheritdoc />
-    public partial class Roles : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

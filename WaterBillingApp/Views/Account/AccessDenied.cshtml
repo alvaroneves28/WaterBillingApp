@@ -1,0 +1,13 @@
+﻿@{
+    ViewData["Title"] = "Acesso Negado";
+}
+
+<h1>Acesso Negado</h1>
+<p>Não tens permissão para aceder a esta página.</p>
+
+@if (ViewData["ReturnUrl"] != null)
+{
+    <p><a href="@ViewData["ReturnUrl"]">Voltar</a></p>
+}
+
+<p><a href="@Url.Action("Index", "Home")">Página Inicial</a></p>

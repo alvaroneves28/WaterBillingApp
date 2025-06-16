@@ -5,15 +5,14 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using REMOVED.Data;
 
 #nullable disable
 
-namespace REMOVED.Data.Migrations
+namespace WaterBillingApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250603101834_AdjustDecimalPrecision")]
-    partial class AdjustDecimalPrecision
+    [Migration("20250613141821_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -77,80 +76,6 @@ namespace REMOVED.Data.Migrations
                     b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(21)
-                        .HasColumnType("nvarchar(21)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasDiscriminator().HasValue("IdentityUser");
-
-                    b.UseTphMappingStrategy();
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
@@ -179,12 +104,10 @@ namespace REMOVED.Data.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -221,12 +144,10 @@ namespace REMOVED.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -236,7 +157,75 @@ namespace REMOVED.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("REMOVED.Data.Entities.Consumption", b =>
+            modelBuilder.Entity("WaterBillingApp.Data.Entities.ApplicationUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ProfileImagePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("WaterBillingApp.Data.Entities.Consumption", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -257,10 +246,10 @@ namespace REMOVED.Data.Migrations
 
                     b.HasIndex("MeterId");
 
-                    b.ToTable("Consumptions");
+                    b.ToTable("Consumption");
                 });
 
-            modelBuilder.Entity("REMOVED.Data.Entities.Customer", b =>
+            modelBuilder.Entity("WaterBillingApp.Data.Entities.Customer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -277,10 +266,21 @@ namespace REMOVED.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("NIF")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
                         .IsRequired()
@@ -294,7 +294,7 @@ namespace REMOVED.Data.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("REMOVED.Data.Entities.Invoice", b =>
+            modelBuilder.Entity("WaterBillingApp.Data.Entities.Invoice", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -314,18 +314,17 @@ namespace REMOVED.Data.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.Property<decimal>("TotalAmount")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ConsumptionId")
                         .IsUnique();
 
-                    b.ToTable("Invoices");
+                    b.ToTable("Invoice");
                 });
 
-            modelBuilder.Entity("REMOVED.Data.Entities.Meter", b =>
+            modelBuilder.Entity("WaterBillingApp.Data.Entities.Meter", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -351,45 +350,10 @@ namespace REMOVED.Data.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Meters");
+                    b.ToTable("Meter");
                 });
 
-            modelBuilder.Entity("REMOVED.Data.Entities.MeterRequest", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("RequestDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MeterRequests");
-                });
-
-            modelBuilder.Entity("REMOVED.Data.Entities.TariffBracket", b =>
+            modelBuilder.Entity("WaterBillingApp.Data.Entities.TariffBracket", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -412,13 +376,6 @@ namespace REMOVED.Data.Migrations
                     b.ToTable("TariffBrackets");
                 });
 
-            modelBuilder.Entity("REMOVED.Data.Entities.ApplicationUser", b =>
-                {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
-
-                    b.HasDiscriminator().HasValue("ApplicationUser");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -430,7 +387,7 @@ namespace REMOVED.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("WaterBillingApp.Data.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -439,7 +396,7 @@ namespace REMOVED.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("WaterBillingApp.Data.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -454,7 +411,7 @@ namespace REMOVED.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("WaterBillingApp.Data.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -463,16 +420,16 @@ namespace REMOVED.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("WaterBillingApp.Data.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("REMOVED.Data.Entities.Consumption", b =>
+            modelBuilder.Entity("WaterBillingApp.Data.Entities.Consumption", b =>
                 {
-                    b.HasOne("REMOVED.Data.Entities.Meter", "Meter")
+                    b.HasOne("WaterBillingApp.Data.Entities.Meter", "Meter")
                         .WithMany("Consumptions")
                         .HasForeignKey("MeterId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -481,31 +438,31 @@ namespace REMOVED.Data.Migrations
                     b.Navigation("Meter");
                 });
 
-            modelBuilder.Entity("REMOVED.Data.Entities.Customer", b =>
+            modelBuilder.Entity("WaterBillingApp.Data.Entities.Customer", b =>
                 {
-                    b.HasOne("REMOVED.Data.Entities.ApplicationUser", "ApplicationUser")
+                    b.HasOne("WaterBillingApp.Data.Entities.ApplicationUser", "ApplicationUser")
                         .WithOne("Customer")
-                        .HasForeignKey("REMOVED.Data.Entities.Customer", "ApplicationUserId")
+                        .HasForeignKey("WaterBillingApp.Data.Entities.Customer", "ApplicationUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
                 });
 
-            modelBuilder.Entity("REMOVED.Data.Entities.Invoice", b =>
+            modelBuilder.Entity("WaterBillingApp.Data.Entities.Invoice", b =>
                 {
-                    b.HasOne("REMOVED.Data.Entities.Consumption", "Consumption")
+                    b.HasOne("WaterBillingApp.Data.Entities.Consumption", "Consumption")
                         .WithOne("Invoice")
-                        .HasForeignKey("REMOVED.Data.Entities.Invoice", "ConsumptionId")
+                        .HasForeignKey("WaterBillingApp.Data.Entities.Invoice", "ConsumptionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Consumption");
                 });
 
-            modelBuilder.Entity("REMOVED.Data.Entities.Meter", b =>
+            modelBuilder.Entity("WaterBillingApp.Data.Entities.Meter", b =>
                 {
-                    b.HasOne("REMOVED.Data.Entities.Customer", "Customer")
+                    b.HasOne("WaterBillingApp.Data.Entities.Customer", "Customer")
                         .WithMany("Meters")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -514,24 +471,24 @@ namespace REMOVED.Data.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("REMOVED.Data.Entities.Consumption", b =>
+            modelBuilder.Entity("WaterBillingApp.Data.Entities.ApplicationUser", b =>
+                {
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("WaterBillingApp.Data.Entities.Consumption", b =>
                 {
                     b.Navigation("Invoice");
                 });
 
-            modelBuilder.Entity("REMOVED.Data.Entities.Customer", b =>
+            modelBuilder.Entity("WaterBillingApp.Data.Entities.Customer", b =>
                 {
                     b.Navigation("Meters");
                 });
 
-            modelBuilder.Entity("REMOVED.Data.Entities.Meter", b =>
+            modelBuilder.Entity("WaterBillingApp.Data.Entities.Meter", b =>
                 {
                     b.Navigation("Consumptions");
-                });
-
-            modelBuilder.Entity("REMOVED.Data.Entities.ApplicationUser", b =>
-                {
-                    b.Navigation("Customer");
                 });
 #pragma warning restore 612, 618
         }

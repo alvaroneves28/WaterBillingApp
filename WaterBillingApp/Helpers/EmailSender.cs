@@ -1,15 +1,13 @@
-﻿
-using System.Net;
+﻿using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 
-namespace REMOVED.Helpers
+namespace WaterBillingApp.Helpers
 {
     public class EmailSender : IEmailSender
     {
         private readonly SmtpSettings _smtpSettings;
 
-     
         public EmailSender(SmtpSettings smtpSettings)
         {
             _smtpSettings = smtpSettings;
@@ -24,7 +22,7 @@ namespace REMOVED.Helpers
                     From = new MailAddress(_smtpSettings.FromEmail, _smtpSettings.FromName),
                     Subject = subject,
                     Body = htmlMessage,
-                    IsBodyHtml = REMOVED,
+                    IsBodyHtml = true,
                 };
                 mail.To.Add(toEmail);
 
@@ -38,11 +36,9 @@ namespace REMOVED.Helpers
             }
             catch (Exception ex)
             {
-                // Log ou output para debug
                 Console.WriteLine("Erro a enviar email: " + ex.Message);
-                throw; // opcional, para deixar o erro propagar
+                throw;
             }
         }
-
     }
 }

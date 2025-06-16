@@ -1,4 +1,5 @@
-﻿@{
+﻿
+@{
     ViewData["Title"] = "Admin Panel";
 }
 
@@ -6,4 +7,21 @@
 
 <p>Welcome to the admin dashboard!</p>
 
-<a class="btn btn-primary" asp-controller="Account" asp-action="Register">Register new account</a>
+
+<div class="dropdown">
+    <button class="btn btn-primary dropdown-toggle" type="button" id="actionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        Choose an action
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="actionDropdown">
+        <li>
+            <a class="dropdown-item" asp-controller="Account" asp-action="Register">Registar nova conta</a>
+        </li>
+        <li>
+            <a class="dropdown-item" asp-controller="Customer" asp-action="Index">Manage customers</a>
+        </li>
+        <li>
+            <a class="dropdown-item" asp-controller="Admin" asp-action="ManageUsers">Manage users</a>
+        </li>
+    </ul>
+</div>
+

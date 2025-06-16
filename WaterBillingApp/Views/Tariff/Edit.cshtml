@@ -1,0 +1,28 @@
+﻿@model WaterBillingApp.Data.Entities.TariffBracket
+
+@{
+    ViewData["Title"] = "Editar Tarifa";
+}
+
+<h1>Editar Tarifa</h1>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="MinVolume">Volume Mínimo</label>
+        <input asp-for="MinVolume" type="number" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MaxVolume">Volume Máximo</label>
+        <input asp-for="MaxVolume" type="number" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PricePerCubicMeter">Preço por m³ (€)</label>
+        <input asp-for="PricePerCubicMeter" type="number" step="0.01" class="form-control" required />
+    </div>
+
+    <button type="submit" class="btn btn-success">Salvar Alterações</button>
+</form>

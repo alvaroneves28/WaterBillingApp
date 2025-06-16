@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Metrics;
 
-namespace REMOVED.Data.Entities
+namespace WaterBillingApp.Data.Entities
 {
     public class Customer
     {

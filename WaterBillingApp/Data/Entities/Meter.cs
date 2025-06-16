@@ -1,7 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace REMOVED.Data.Entities
+namespace WaterBillingApp.Data.Entities
 {
+    public enum MeterStatus
+    {
+        Pending,
+        Approved,
+        Rejected
+    }
     public class Meter
     {
         public int Id { get; set; }
@@ -15,7 +21,11 @@ namespace REMOVED.Data.Entities
         public DateTime InstallationDate { get; set; }
 
         [Required]
+        public MeterStatus Status { get; set; } = MeterStatus.Pending;
+
+        [Required]
         public bool IsActive { get; set; }
+
         [Required]
         public int CustomerId { get; set; }
         public Customer Customer { get; set; }

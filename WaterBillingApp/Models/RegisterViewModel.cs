@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace REMOVED.Models
+namespace WaterBillingApp.Models
 {
     public class RegisterViewModel
     {
@@ -30,7 +30,7 @@ namespace REMOVED.Models
 
         [Required]
         [Display(Name = "Ativo?")]
-        public bool IsActive { get; set; } = REMOVED;
+        public bool IsActive { get; set; } = true;
 
         [Required]
         [DataType(DataType.Password)]

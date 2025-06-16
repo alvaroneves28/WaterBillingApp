@@ -1,0 +1,39 @@
+﻿@model List<UserWithRolesViewModel>
+
+@{
+    ViewData["Title"] = "Manage Users";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>UserName</th>
+            <th>Email Confirmed</th>
+            <th>Roles</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.User.Email</td>
+                <td>@item.User.UserName</td>
+                <td>@(item.User.EmailConfirmed ? "Yes" : "No")</td>
+                <td>
+                    @foreach (var role in item.Roles)
+                    {
+                        <span class="badge bg-secondary">@role</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="EditUser" asp-route-id="@item.User.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="DeleteUser" asp-route-id="@item.User.Id" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

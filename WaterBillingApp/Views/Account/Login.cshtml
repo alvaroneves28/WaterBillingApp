@@ -1,12 +1,15 @@
-﻿@model REMOVED.Models.LoginViewModel
+﻿@model WaterBillingApp.Models.LoginViewModel
 @{
     ViewData["Title"] = "Login";
 }
 
 <h1>Login</h1>
+@if (TempData["ResetPasswordStatus"] != null)
+{
+    <div class="alert alert-success">@TempData["ResetPasswordStatus"]</div>
+}
 
-<!-- Mensagens de erro gerais -->
-@Html.ValidationSummary(REMOVED, "", new { @class = "text-danger" })
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
 <form asp-action="Login" method="post">
     <div>

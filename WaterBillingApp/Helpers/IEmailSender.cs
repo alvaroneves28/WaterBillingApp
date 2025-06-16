@@ -1,4 +1,4 @@
-﻿namespace REMOVED.Helpers
+﻿namespace WaterBillingApp.Helpers
 {
     public interface IEmailSender
     {

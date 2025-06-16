@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>aspnet-REMOVED-9a3db343-4b81-4272-89a8-4168740a32c1</UserSecretsId>
+    <UserSecretsId>aspnet-WaterBillingApp-9a3db343-4b81-4272-89a8-4168740a32c1</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

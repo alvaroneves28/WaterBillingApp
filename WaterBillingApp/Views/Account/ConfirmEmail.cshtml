@@ -1,0 +1,10 @@
+﻿@{
+    ViewData["Title"] = "Confirmação de Email";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="alert alert-success" role="alert">
+    O seu email foi confirmado com sucesso!
+    Agora pode <a href="@Url.Action("ResetPassword", "Account", new { email = ViewBag.Email })">definir a sua password</a>.
+</div>

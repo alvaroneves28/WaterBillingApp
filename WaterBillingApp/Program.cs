@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;  // para IOptions
-using REMOVED.Data;
-using REMOVED.Data.Entities;
-using REMOVED.Helpers;
+using Microsoft.Extensions.Options;  
+using WaterBillingApp.Data;
+using WaterBillingApp.Data.Entities;
+using WaterBillingApp.Helpers;
+using WaterBillingApp.Repositories;
 
-namespace REMOVED
+namespace WaterBillingApp
 {
     public class Program
     {
@@ -35,7 +36,7 @@ namespace REMOVED
                 {
                     UserName = adminEmail,
                     Email = adminEmail,
-                    EmailConfirmed = REMOVED
+                    EmailConfirmed = true
                 };
 
                 var createUserResult = await userManager.CreateAsync(newAdminUser, adminPassword);
@@ -53,13 +54,30 @@ namespace REMOVED
 
         public static async Task Main(string[] args)
         {
+
+
             var builder = WebApplication.CreateBuilder(args);
+
+            // Injeção de dependencias
+            builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+            builder.Services.AddScoped<IMeterRepository, MeterRepository>(); 
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.AccessDeniedPath = "/Account/AccessDenied";
+                options.LoginPath = "/Account/Login";
+            });
+
+            if (builder.Environment.IsDevelopment())
+            {
+                builder.Configuration.AddUserSecrets<Program>();
+            }
 
             // Configuração da base de dados
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
+                options.UseSqlServer(connectionString, sqlOptions =>
+                    sqlOptions.EnableRetryOnFailure()));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             // Usar o ApplicationUser personalizado e ativar roles
@@ -67,9 +85,9 @@ namespace REMOVED
             {
                 options.SignIn.RequireConfirmedAccount = false;
 
-                options.Password.RequireDigit = REMOVED;
-                options.Password.RequireLowercase = REMOVED;
-                options.Password.RequireUppercase = REMOVED;
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = true;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequiredLength = 6;
             })
@@ -97,6 +115,7 @@ namespace REMOVED
                 await CreateRoles(services);
             }
 
+            
             // Pipeline HTTP
             if (app.Environment.IsDevelopment())
             {
@@ -113,15 +132,14 @@ namespace REMOVED
 
             app.UseRouting();
 
-            app.UseAuthentication(); // <-- IMPORTANTE
+            app.UseAuthentication(); 
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
-            // Remove se não estás a usar Razor Pages
-            // app.MapRazorPages();
+            
 
             await app.RunAsync();
         }

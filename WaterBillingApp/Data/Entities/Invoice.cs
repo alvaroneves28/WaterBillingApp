@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace REMOVED.Data.Entities
+namespace WaterBillingApp.Data.Entities
 {
     public class Invoice
     {

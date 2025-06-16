@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace REMOVED.Models
+namespace WaterBillingApp.Models
 {
     public class ResetPasswordViewModel
     {

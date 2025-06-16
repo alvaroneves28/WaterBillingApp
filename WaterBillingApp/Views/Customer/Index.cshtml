@@ -1,0 +1,38 @@
+﻿@model IEnumerable<WaterBillingApp.Data.Entities.Customer>
+
+@{
+    ViewData["Title"] = "Customer Manager";
+}
+
+<h1>Gerenciamento de Clientes</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>NIF</th>
+            <th>Email</th>
+            <th>Address</th>
+            <th>Contact</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var customer in Model)
+        {
+            <tr>
+                <td>@customer.FullName</td>
+                <td>@customer.NIF</td>
+                <td>@customer.Email</td>
+                <td>@customer.Address</td>
+                <td>@customer.Phone</td>
+                <td>@(customer.IsActive ? "Ativo" : "Inativo")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@customer.Id" class="btn btn-warning">Editar</a>
+                    <a asp-action="Delete" asp-route-id="@customer.Id" class="btn btn-danger">Excluir</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
