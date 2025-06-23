@@ -12,5 +12,8 @@ namespace WaterBillingApp.Helpers
         Task<IEnumerable<Meter>> GetPendingMetersAsync();
 
         Task<IEnumerable<Meter>> GetActiveMetersAsync();
+        Task<IEnumerable<Meter>> GetMetersByCustomerAsync(int customerId);
+
+
     }
 }

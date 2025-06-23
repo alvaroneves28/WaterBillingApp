@@ -35,6 +35,7 @@ namespace WaterBillingApp.Controllers
 
             var model = new MeterViewModel
             {
+
                 InstallationDate = DateTime.Today, 
                 CustomersList = customers.Select(c => new SelectListItem
                 {

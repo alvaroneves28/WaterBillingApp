@@ -8,7 +8,7 @@ namespace WaterBillingApp.Data.Entities
 
         [Required]
         [Range(0.01, 100000)]
-        public double Volume { get; set; }
+        public decimal Volume { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
@@ -19,5 +19,10 @@ namespace WaterBillingApp.Data.Entities
         public Meter Meter { get; set; }
 
         public Invoice? Invoice { get; set; }
+
+        public int Reading { get; set; }
+
+        public int TariffBracketId { get; set; }
+        public TariffBracket TariffBracket { get; set; }
     }
 }

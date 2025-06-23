@@ -1,5 +1,27 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@model AddReadingViewModel
+
+<h2>Add Reading</h2>
+
+<form asp-action="AddReading" method="post">
+    <input type="hidden" asp-for="MeterId" />
+    <input type="hidden" asp-for="Date" /> 
+
+    <div class="form-group">
+        <label asp-for="Reading"></label>
+        <input asp-for="Reading" class="form-control" />
+        <span asp-validation-for="Reading" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Reading Date</label>
+        <input class="form-control" value="@Model.Date.ToString("dd/MM/yyyy")" disabled />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

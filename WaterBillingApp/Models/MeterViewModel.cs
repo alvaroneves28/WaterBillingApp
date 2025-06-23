@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using WaterBillingApp.Data.Entities;
 
 namespace WaterBillingApp.Models
 {
@@ -27,8 +28,16 @@ namespace WaterBillingApp.Models
         [Display(Name = "Cliente")]
         public int CustomerId { get; set; }
 
-        public string? CustomerName { get; set; }  
+        public string? CustomerName { get; set; }
 
-        public IEnumerable<SelectListItem>? CustomersList { get; set; }  
+        public MeterStatus Status { get; set; }
+
+        public IEnumerable<SelectListItem>? CustomersList { get; set; }
+
+        public decimal? LastConsumptionValue { get; set; }
+        public DateTime? LastConsumptionDate { get; set; }
+
+        public ConsumptionViewModel LastConsumption { get; set; }
+
     }
 }

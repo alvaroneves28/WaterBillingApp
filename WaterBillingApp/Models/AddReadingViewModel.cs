@@ -13,7 +13,9 @@ namespace WaterBillingApp.Models
         [Required(ErrorMessage = "Volume is required.")]
         [Range(0.01, 100000, ErrorMessage = "Volume must be between 0.01 and 100000.")]
         [Display(Name = "Volume (m³)")]
-        public double Volume { get; set; }
+        public decimal Volume { get; set; }
+
+        public int Reading { get; set; }
 
         [Required(ErrorMessage = "Date is required.")]
         [DataType(DataType.Date)]

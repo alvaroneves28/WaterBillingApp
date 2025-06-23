@@ -24,14 +24,24 @@ public class MeterRepository : IMeterRepository
     {
         return await _context.Meters
         .Include(m => m.Customer)
+        .Include(m => m.Consumptions)
+        //.Include(m => m.Invoice)
         .ToListAsync();
     }
 
     public async Task<Meter> GetByIdAsync(int id)
     {
-        return await _context.Meters
-        .Include(m => m.Customer)
-        .FirstOrDefaultAsync(m => m.Id == id);
+        var meter = await _context.Meters
+            .Include(m => m.Customer)
+            .Include(m => m.Consumptions)
+            .FirstOrDefaultAsync(m => m.Id == id);
+
+        if (meter == null)
+        {
+            throw new KeyNotFoundException($"Meter with Id {id} not found.");
+        }
+
+        return meter;
     }
 
     public async Task UpdateAsync(Meter meter)
@@ -61,9 +71,19 @@ public class MeterRepository : IMeterRepository
     public async Task<IEnumerable<Meter>> GetActiveMetersAsync()
     {
         return await _context.Meters
-                             .Include(m => m.Customer)
-                             .Where(m => m.IsActive)
-                             .ToListAsync();
+        .Include(m => m.Customer)
+        .Include(m => m.Consumptions)
+        .Where(m => m.IsActive && m.Status == MeterStatus.Approved)
+        .ToListAsync();
     }
+
+    public async Task<IEnumerable<Meter>> GetMetersByCustomerAsync(int customerId)
+    {
+        return await _context.Meters
+            .Include(m => m.Consumptions)
+            .Where(m => m.CustomerId == customerId && m.IsActive)
+            .ToListAsync();
+    }
+
 
 }

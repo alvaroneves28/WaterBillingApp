@@ -60,7 +60,9 @@ namespace WaterBillingApp
 
             // Injeção de dependencias
             builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-            builder.Services.AddScoped<IMeterRepository, MeterRepository>(); 
+            builder.Services.AddScoped<IMeterRepository, MeterRepository>();
+            builder.Services.AddScoped<IConsumptionRepository, ConsumptionRepository>();
+            builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.AccessDeniedPath = "/Account/AccessDenied";

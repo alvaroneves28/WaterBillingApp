@@ -4,33 +4,30 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WaterBillingApp.Data;
 using WaterBillingApp.Data.Entities;
+using WaterBillingApp.Helpers;
 
 [Authorize(Roles = "Customer")]
 public class CustomerAreaController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IMeterRepository _meterRepository;
 
-    public CustomerAreaController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+    public CustomerAreaController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMeterRepository meterRepository)
     {
         _context = context;
         _userManager = userManager;
+        _meterRepository = meterRepository;
     }
 
     public async Task<IActionResult> Index()
     {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null)
-            return NotFound();
+        var userId = _userManager.GetUserId(User);
+        var customer = await _context.Customers.FirstOrDefaultAsync(c => c.ApplicationUserId == userId);
+        if (customer == null) return NotFound();
 
-        var customer = await _context.Customers
-            .Include(c => c.Meters)
-            .FirstOrDefaultAsync(c => c.ApplicationUserId == user.Id);
-
-        if (customer == null)
-            return NotFound();
-
-        return View(customer.Meters);
+        var meters = await _meterRepository.GetMetersByCustomerAsync(customer.Id);
+        return View(meters);
     }
 
     [HttpGet]
@@ -60,5 +57,7 @@ public class CustomerAreaController : Controller
         TempData["StatusMessage"] = "Meter request submitted. Awaiting approval.";
         return RedirectToAction(nameof(Index)); 
     }
+
+
 
 }

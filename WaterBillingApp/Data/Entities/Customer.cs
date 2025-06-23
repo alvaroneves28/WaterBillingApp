@@ -7,6 +7,7 @@ namespace WaterBillingApp.Data.Entities
     {
         public int Id { get; set; }
 
+
         [Required]
         [StringLength(100)]
         public string FullName { get; set; }

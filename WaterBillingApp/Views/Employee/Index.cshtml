@@ -37,7 +37,12 @@
                         <input type="hidden" name="id" value="@meter.Id" />
                         <button type="submit" class="btn btn-danger btn-sm">Reject</button>
                     </form>
+                    <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this meter?');">
+                        <input type="hidden" name="id" value="@meter.Id" />
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                    </form>
                 </td>
+
             </tr>
         }
     </tbody>
@@ -50,18 +55,65 @@
             <th>Serial Number</th>
             <th>Installation Date</th>
             <th>Customer</th>
+            <th>Last Consumption</th>
+            <th>Last Reading</th>
+            <th>Date</th>
             <th>Status</th>
+            <th>Actions</th>
+            <th>Invoice</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var meter in Model.ActiveMeters)
         {
+            var lastConsumption = meter.LastConsumption;
+
             <tr>
                 <td>@meter.SerialNumber</td>
-                <td>@meter.InstallationDate.ToString("yyyy-MM-dd")</td>
+                <td>@meter.InstallationDate.ToString("dd/MM/yyyy")</td>
                 <td>@meter.CustomerName</td>
-                <td>Approved</td>
+                <td>
+                    @(lastConsumption != null ? lastConsumption.Volume.ToString("N2") : "No consumption")
+                </td>
+                <td>
+                    @(lastConsumption != null ? lastConsumption.Reading.ToString() : "No reading")
+                </td>
+                <td>
+                    @(lastConsumption != null ? lastConsumption.Date.ToString("dd/MM/yyyy") : "-")
+                </td>
+                <td>
+                    @if (meter.IsActive)
+                    {
+                        <span class="text-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="text-warning">Pending Approval</span>
+                    }
+                </td>
+                <td>
+                    <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this meter?');">
+                        <input type="hidden" name="id" value="@meter.Id" />
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Delete Meter</button>
+                    </form>
+                </td>
+                <td>
+                    @if (lastConsumption != null)
+                    {
+                        <form asp-action="CreateInvoice" method="post" class="d-inline">
+                            <input type="hidden" name="consumptionId" value="@lastConsumption.Id" />
+                            <button type="submit" class="btn btn-primary btn-sm">Issue Invoice</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span class="text-muted">No consumption</span>
+                    }
+                </td>
             </tr>
         }
+
     </tbody>
 </table>
+
+

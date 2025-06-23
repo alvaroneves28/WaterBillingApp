@@ -11,8 +11,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Meter> Meters { get; set; }  
-    public DbSet<Consumption> Consumptions { get; set; }  
-    // public DbSet<Invoice> Invoices { get; set; }  // comentar/remover
+    public DbSet<Consumption> Consumptions { get; set; }
+    public DbSet<Invoice> Invoices { get; set; } 
     public DbSet<TariffBracket> TariffBrackets { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -43,6 +43,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<Invoice>(entity =>
         {
             entity.Property(e => e.TotalAmount)
+                .HasPrecision(18, 2);
+        });
+
+        modelBuilder.Entity<Consumption>(entity =>
+        {
+            entity.Property(c => c.Volume)
                 .HasPrecision(18, 2);
         });
     }

@@ -33,9 +33,24 @@ public class EmployeeController : Controller
                 Id = m.Id,
                 SerialNumber = m.SerialNumber,
                 InstallationDate = m.InstallationDate,
-                CustomerName = m.Customer?.FullName ?? "N/A",
                 IsActive = m.IsActive,
-                CustomerId = m.CustomerId
+                CustomerName = m.Customer?.FullName ?? "N/A",
+                CustomerId = m.CustomerId,
+                Status = m.Status,
+
+                LastConsumption = m.Consumptions
+               .OrderByDescending(c => c.Date)
+               .Select(c => new ConsumptionViewModel
+               {
+                   Id = c.Id,
+                   Reading = c.Reading,
+                   Volume = c.Volume,
+                   Date = c.Date
+               })
+               .FirstOrDefault(),
+
+                LastConsumptionValue = m.Consumptions.OrderByDescending(c => c.Date).FirstOrDefault()?.Volume,
+                LastConsumptionDate = m.Consumptions.OrderByDescending(c => c.Date).FirstOrDefault()?.Date
             })
         };
 
@@ -71,6 +86,22 @@ public class EmployeeController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-  
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var meter = await _meterRepository.GetByIdAsync(id);
+        if (meter == null)
+        {
+            return NotFound();
+        }
+
+        await _meterRepository.DeleteAsync(id);
+        TempData["StatusMessage"] = "Meter deleted successfully.";
+        return RedirectToAction("ManageMeters");
+    }
+
+
+
 
 }

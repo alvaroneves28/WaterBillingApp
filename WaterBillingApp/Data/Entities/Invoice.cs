@@ -2,6 +2,12 @@
 
 namespace WaterBillingApp.Data.Entities
 {
+    public enum InvoiceStatus
+    {
+        Pending,
+        Approved,
+        Rejected
+    }
     public class Invoice
     {
         public int Id { get; set; }
@@ -16,7 +22,7 @@ namespace WaterBillingApp.Data.Entities
 
         [Required]
         [StringLength(20)]
-        public string Status { get; set; }
+        public InvoiceStatus Status { get; set; }
         [Required]
         public int ConsumptionId { get; set; }
         public Consumption Consumption { get; set; }

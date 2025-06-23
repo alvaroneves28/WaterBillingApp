@@ -34,7 +34,7 @@ public class ConsumptionController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AddReading(AddReadingViewModel model)
+    public async Task<IActionResult> AddReading(AddConsumptionViewModel model)
     {
         if (!ModelState.IsValid)
             return View(model);
@@ -43,16 +43,33 @@ public class ConsumptionController : Controller
         if (meter == null || !meter.IsActive)
             return NotFound();
 
+        
+        var lastConsumption = meter.Consumptions
+            .OrderByDescending(c => c.Date)
+            .FirstOrDefault();
+
+        var lastReading = lastConsumption?.Reading ?? 0;
+
+        
+        if (model.Reading <= lastReading)
+        {
+            ModelState.AddModelError("Reading", $"The new reading must be greater than the last recorded reading ({lastReading}).");
+            return View(model);
+        }
+
+        
         var consumption = new Consumption
         {
             MeterId = model.MeterId,
-            Volume = model.Volume,
-            Date = model.Date
+            Date = model.Date,
+            Reading = model.Reading,
+            Volume = model.Reading - lastReading
         };
 
         await _consumptionRepository.AddAsync(consumption);
 
         TempData["StatusMessage"] = "Reading added successfully!";
-        return RedirectToAction("AddReading", "Consumption");
+        return RedirectToAction("Index", "CustomerArea");
     }
+
 }
