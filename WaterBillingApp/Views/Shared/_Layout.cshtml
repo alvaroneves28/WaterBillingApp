@@ -36,7 +36,7 @@
                         var user = await UserManager.GetUserAsync(User);
                         if (user != null && !string.IsNullOrEmpty(user.ProfileImagePath))
                         {
-                            <img src="@user.ProfileImagePath" alt="Foto de Perfil" width="100" class="rounded-circle" />
+                            <img src="@user.ProfileImagePath" alt="Profile Photo" width="100" class="rounded-circle" />
                         }
                         else
                         {

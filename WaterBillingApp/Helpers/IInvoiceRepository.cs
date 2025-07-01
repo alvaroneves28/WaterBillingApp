@@ -11,6 +11,8 @@ namespace WaterBillingApp.Helpers
         Task DeleteInvoiceAsync(int id);
         Task<bool> InvoiceExistsAsync(int id);
         Task<Invoice?> GetInvoiceByConsumptionIdAsync(int consumptionId);
+        Task<Invoice?> GetPendingInvoiceForCustomerAsync(int customerId);
+        Task<IEnumerable<Invoice>> GetInvoicesByCustomerIdAsync(int customerId);
 
     }
 }

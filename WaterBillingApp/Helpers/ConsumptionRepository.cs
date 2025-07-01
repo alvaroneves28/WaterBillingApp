@@ -25,6 +25,7 @@ public class ConsumptionRepository : IConsumptionRepository
     {
         return await _context.Consumptions
                              .Include(c => c.Meter)
+                             .Include(c => c.TariffBracket)
                              .FirstOrDefaultAsync(c => c.Id == id);
     }
 

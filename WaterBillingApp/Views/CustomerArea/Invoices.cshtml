@@ -1,0 +1,42 @@
+﻿@model WaterBillingApp.Models.CustomerInvoicesViewModel
+
+@{
+    ViewData["Title"] = "Invoice History";
+}
+
+<h1>Invoice History for @Model.CustomerName</h1>
+
+@if (!Model.Invoices.Any())
+{
+    <div class="alert alert-info">You have no invoices.</div>
+}
+else
+{
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Invoice ID</th>
+                <th>Issue Date</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var invoice in Model.Invoices)
+            {
+                <tr>
+                    <td>@invoice.Id</td>
+                    <td>@invoice.IssueDate.ToString("dd/MM/yyyy")</td>
+                    <td>@invoice.TotalAmount.ToString("C")</td>
+                    <td>@invoice.Status.ToString()</td>
+                    <td>
+                        <a asp-controller="Invoice" asp-action="Details" asp-route-id="@invoice.Id" class="btn btn-sm btn-primary">View</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<a asp-controller="CustomerArea" asp-action="Index" class="btn btn-secondary mt-3">Back to Dashboard</a>
+

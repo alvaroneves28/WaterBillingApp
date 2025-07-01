@@ -47,5 +47,12 @@ namespace WaterBillingApp.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<Customer?> GetByUserIdAsync(string userId)
+        {
+            return await _context.Customers
+                .FirstOrDefaultAsync(c => c.ApplicationUserId == userId);
+        }
+
     }
 }

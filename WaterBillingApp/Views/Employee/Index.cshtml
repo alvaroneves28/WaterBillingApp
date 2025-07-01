@@ -6,6 +6,10 @@
 
 <h1>@ViewData["Title"]</h1>
 
+<a asp-controller="Invoice" asp-action="Index" class="btn btn-info mb-3">
+    View Invoices
+</a>
+
 @if (TempData["StatusMessage"] != null)
 {
     <div class="alert alert-info">@TempData["StatusMessage"]</div>
@@ -100,7 +104,7 @@
                 <td>
                     @if (lastConsumption != null)
                     {
-                        <form asp-action="CreateInvoice" method="post" class="d-inline">
+                        <form asp-action="IssueInvoice" asp-controller="Invoice" method="post" class="d-inline">
                             <input type="hidden" name="consumptionId" value="@lastConsumption.Id" />
                             <button type="submit" class="btn btn-primary btn-sm">Issue Invoice</button>
                         </form>

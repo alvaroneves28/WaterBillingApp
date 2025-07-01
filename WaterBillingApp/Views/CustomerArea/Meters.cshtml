@@ -1,0 +1,85 @@
+﻿@model IEnumerable<WaterBillingApp.Data.Entities.Meter>
+
+@{
+    ViewData["Title"] = "My Meters";
+}
+
+<h2>My Meters</h2>
+
+@if (TempData["StatusMessage"] != null)
+{
+    <div class="alert alert-info">@TempData["StatusMessage"]</div>
+}
+
+<a asp-action="RequestMeter" class="btn btn-primary mb-3">Request New Meter</a>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        You currently have no meters associated with your account.
+    </div>
+}
+else
+{
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Serial Number</th>
+                <th>Installation Date</th>
+                <th>Status</th>
+                <th>Last Consumption</th>
+                <th>Last Reading</th>
+                <th>Last Reading Date</th>
+                <th>Actions</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var meter in Model)
+            {
+                var lastConsumption = meter.Consumptions
+                .OrderByDescending(c => c.Date)
+                .FirstOrDefault();
+
+                <tr>
+                    <td>@meter.SerialNumber</td>
+                    <td>@meter.InstallationDate.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        @if (meter.IsActive)
+                        {
+                            <span class="text-success">Active</span>
+                        }
+                        else
+                        {
+                            <span class="text-warning">Pending Approval</span>
+                        }
+                    </td>
+
+                    <td>
+                        @(lastConsumption != null ? lastConsumption.Volume.ToString("N2") : "No consumption")
+                    </td>
+                    <td>
+                        @(lastConsumption != null ? lastConsumption.Reading.ToString() : "No reading")
+                    </td>
+                    <td>
+                        @(lastConsumption != null ? lastConsumption.Date.ToString("dd/MM/yyyy") : "-")
+                    </td>
+
+                    <td>
+                        @if (meter.IsActive)
+                        {
+                            <a asp-controller="Consumption" asp-action="AddReading" asp-route-meterId="@meter.Id" class="btn btn-primary btn-sm">
+                                Add Reading
+                            </a>
+                        }
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+}
+
+<a asp-controller="CustomerArea" asp-action="Index" class="btn btn-secondary mb-3">
+    Back to Dashboard
+</a>

@@ -1,0 +1,44 @@
+﻿@model IEnumerable<WaterBillingApp.Data.Entities.Invoice>
+
+@{
+    ViewData["Title"] = "Invoices";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (TempData["StatusMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["StatusMessage"]</div>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Invoice ID</th>
+            <th>Issue Date</th>
+            <th>Consumption ID</th>
+            <th>Meter Serial Number</th>
+            <th>Customer</th>
+            <th>Total Amount (€)</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var invoice in Model)
+        {
+            <tr>
+                <td>@invoice.Id</td>
+                <td>@invoice.IssueDate.ToString("dd/MM/yyyy")</td>
+                <td>@invoice.ConsumptionId</td>
+                <td>@invoice.Consumption?.Meter?.SerialNumber</td>
+                <td>@(invoice.Consumption?.Meter?.Customer?.FullName ?? "N/A")</td>
+                <td>@invoice.TotalAmount.ToString("N2")</td>
+                <td>@invoice.Status.ToString()</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@invoice.Id" class="btn btn-primary btn-sm">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

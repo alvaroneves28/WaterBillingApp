@@ -1,7 +1,7 @@
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;  
-using WaterBillingApp.Data;
+using Microsoft.Extensions.Options;
 using WaterBillingApp.Data.Entities;
 using WaterBillingApp.Helpers;
 using WaterBillingApp.Repositories;
@@ -63,6 +63,9 @@ namespace WaterBillingApp
             builder.Services.AddScoped<IMeterRepository, MeterRepository>();
             builder.Services.AddScoped<IConsumptionRepository, ConsumptionRepository>();
             builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+            builder.Services.AddSingleton(x => new BlobServiceClient(builder.Configuration.GetConnectionString("AzureBlobStorage")));
+
+
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.AccessDeniedPath = "/Account/AccessDenied";
@@ -117,7 +120,7 @@ namespace WaterBillingApp
                 await CreateRoles(services);
             }
 
-            
+
             // Pipeline HTTP
             if (app.Environment.IsDevelopment())
             {
@@ -134,14 +137,14 @@ namespace WaterBillingApp
 
             app.UseRouting();
 
-            app.UseAuthentication(); 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
-            
+
 
             await app.RunAsync();
         }

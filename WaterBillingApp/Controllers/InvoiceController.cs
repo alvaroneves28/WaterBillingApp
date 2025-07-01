@@ -17,9 +17,10 @@ namespace WaterBillingApp.Controllers
             _consumptionRepository = consumptionRepository;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var invoices = await _invoiceRepository.GetAllInvoicesAsync();
+            return View(invoices);
         }
 
         [HttpPost]
@@ -36,7 +37,7 @@ namespace WaterBillingApp.Controllers
             if (existingInvoice != null)
             {
                 TempData["StatusMessage"] = "Invoice already issued for this consumption.";
-                return RedirectToAction("Index"); 
+                return RedirectToAction("InvoiceCreated"); 
             }
 
             var invoice = new Invoice
@@ -50,7 +51,7 @@ namespace WaterBillingApp.Controllers
             await _invoiceRepository.AddInvoiceAsync(invoice);
 
             TempData["StatusMessage"] = "Invoice issued successfully.";
-            return RedirectToAction("Index");
+            return RedirectToAction("Index","Invoice", new { createdInvoiceId = invoice.Id });
         }
 
         private decimal CalculateAmount(Consumption consumption)
@@ -63,6 +64,18 @@ namespace WaterBillingApp.Controllers
             
             return consumption.Volume * consumption.TariffBracket.PricePerCubicMeter;
         }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var invoice = await _invoiceRepository.GetInvoiceByIdAsync(id);
+            if (invoice == null)
+            {
+                return NotFound();
+            }
+
+            return View(invoice);
+        }
+
 
     }
 }

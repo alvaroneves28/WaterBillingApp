@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using WaterBillingApp.Data.Entities;
 using WaterBillingApp.Helpers;
 
@@ -17,9 +15,10 @@ public class InvoiceRepository : IInvoiceRepository
     {
         return await _context.Invoices
             .Include(i => i.Consumption)
-                .ThenInclude(c => c.TariffBracket)  
+                .ThenInclude(c => c.TariffBracket)
             .Include(i => i.Consumption)
-                .ThenInclude(c => c.Meter)          
+                .ThenInclude(c => c.Meter)
+                    .ThenInclude(m => m.Customer)
             .FirstOrDefaultAsync(i => i.Id == id);
     }
 
@@ -28,6 +27,7 @@ public class InvoiceRepository : IInvoiceRepository
         return await _context.Invoices
             .Include(i => i.Consumption)
             .ThenInclude(c => c.Meter)
+            .ThenInclude(m => m.Customer)
             .ToListAsync();
     }
 
@@ -65,5 +65,29 @@ public class InvoiceRepository : IInvoiceRepository
             .ThenInclude(c => c.Meter)
             .FirstOrDefaultAsync(i => i.ConsumptionId == consumptionId);
     }
+
+    public async Task<Invoice?> GetPendingInvoiceForCustomerAsync(int customerId)
+    {
+        return await _context.Invoices
+            .Include(i => i.Consumption)
+                .ThenInclude(c => c.Meter)
+            .Where(i => i.Status == InvoiceStatus.Pending &&
+                        i.Consumption.Meter.CustomerId == customerId)
+            .OrderByDescending(i => i.IssueDate)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<IEnumerable<Invoice>> GetInvoicesByCustomerIdAsync(int customerId)
+    {
+        return await _context.Invoices
+            .Include(i => i.Consumption)
+                .ThenInclude(c => c.Meter)
+            .Where(i => i.Consumption.Meter.CustomerId == customerId)
+            .OrderByDescending(i => i.IssueDate)
+            .ToListAsync();
+    }
+
+
+
 
 }

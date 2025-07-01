@@ -1,0 +1,7 @@
+﻿@if (Context.Request.Query.ContainsKey("createdInvoiceId"))
+{
+    <div class="alert alert-success">
+        Invoice created successfully.
+        <a asp-action="Details" asp-route-id="@Context.Request.Query["createdInvoiceId"]">View invoice</a>
+    </div>
+}

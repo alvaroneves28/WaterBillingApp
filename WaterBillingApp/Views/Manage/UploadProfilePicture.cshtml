@@ -1,0 +1,18 @@
+﻿@{
+    ViewData["Title"] = "Upload Profile Picture";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="UploadProfilePicture" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="profilePicture">Choose a profile picture</label>
+        <input type="file" name="profilePicture" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Upload</button>
+</form>
+
+@if (TempData["StatusMessage"] != null)
+{
+    <div class="alert alert-success mt-3">@TempData["StatusMessage"]</div>
+}

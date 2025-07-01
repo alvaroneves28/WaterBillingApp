@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using WaterBillingApp.Data;
 using WaterBillingApp.Data.Entities;
 using WaterBillingApp.Helpers;
+using WaterBillingApp.Models;
+using WaterBillingApp.Repositories;
 
 [Authorize(Roles = "Customer")]
 public class CustomerAreaController : Controller
@@ -12,22 +14,33 @@ public class CustomerAreaController : Controller
     private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IMeterRepository _meterRepository;
+    private readonly ICustomerRepository _customerRepository;
+    private readonly IInvoiceRepository _invoiceRepository;
 
-    public CustomerAreaController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMeterRepository meterRepository)
+    public CustomerAreaController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMeterRepository meterRepository, ICustomerRepository customerRepository, IInvoiceRepository invoiceRepository)
     {
         _context = context;
         _userManager = userManager;
         _meterRepository = meterRepository;
+        _customerRepository = customerRepository;
+        _invoiceRepository = invoiceRepository;
     }
 
     public async Task<IActionResult> Index()
     {
         var userId = _userManager.GetUserId(User);
-        var customer = await _context.Customers.FirstOrDefaultAsync(c => c.ApplicationUserId == userId);
-        if (customer == null) return NotFound();
+        var customer = await _customerRepository.GetByUserIdAsync(userId);
 
-        var meters = await _meterRepository.GetMetersByCustomerAsync(customer.Id);
-        return View(meters);
+        var pendingInvoice = await _invoiceRepository.GetPendingInvoiceForCustomerAsync(customer.Id);
+
+        var model = new CustomerDashboardViewModel
+        {
+            CustomerName = customer.FullName,
+            HasPendingInvoice = pendingInvoice != null,
+            PendingInvoiceId = pendingInvoice?.Id
+        };
+
+        return View(model);
     }
 
     [HttpGet]
@@ -57,6 +70,47 @@ public class CustomerAreaController : Controller
         TempData["StatusMessage"] = "Meter request submitted. Awaiting approval.";
         return RedirectToAction(nameof(Index)); 
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Invoices()
+    {
+        var userId = _userManager.GetUserId(User);
+        var customer = await _customerRepository.GetByUserIdAsync(userId);
+
+        if (customer == null)
+            return NotFound();
+
+        var invoices = await _invoiceRepository.GetInvoicesByCustomerIdAsync(customer.Id);
+
+        var model = new CustomerInvoicesViewModel
+        {
+            CustomerName = customer.FullName,
+            Invoices = invoices.ToList()
+        };
+
+        return View(model);
+    }
+
+    public async Task<IActionResult> Meters()
+    {
+        
+        var userId = _userManager.GetUserId(User);
+
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+
+
+        var customer = await _customerRepository.GetByUserIdAsync(userId);
+        if (customer == null)
+            return NotFound("Customer not found");
+
+        var meters = await _meterRepository.GetMetersByCustomerAsync(customer.Id);
+
+
+        return View(meters);
+    }
+
+
 
 
 

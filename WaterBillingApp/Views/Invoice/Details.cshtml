@@ -1,0 +1,65 @@
+﻿@model WaterBillingApp.Data.Entities.Invoice
+
+@{
+    ViewData["Title"] = "Invoice Details";
+}
+
+<h1>Invoice Details</h1>
+
+<div class="card">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-4">Invoice ID</dt>
+            <dd class="col-sm-8">@Model.Id</dd>
+
+            <dt class="col-sm-4">Issue Date</dt>
+            <dd class="col-sm-8">@Model.IssueDate.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-4">Status</dt>
+            <dd class="col-sm-8">@Model.Status</dd>
+
+            <dt class="col-sm-4">Total Amount</dt>
+            <dd class="col-sm-8">@Model.TotalAmount.ToString("C")</dd>
+        </dl>
+
+        <h5 class="mt-4">Consumption Info</h5>
+        <dl class="row">
+            <dt class="col-sm-4">Reading Date</dt>
+            <dd class="col-sm-8">@Model.Consumption?.Date.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-4">Volume Consumed</dt>
+            <dd class="col-sm-8">@Model.Consumption?.Volume m³</dd>
+
+            <dt class="col-sm-4">Applied Tariff</dt>
+            <dd class="col-sm-8">
+                @if (Model.Consumption?.TariffBracket != null)
+                {
+                    <span>
+                        €@Model.Consumption.TariffBracket.PricePerCubicMeter /m³
+                        (from @Model.Consumption.TariffBracket.MinVolume
+                        to @(Model.Consumption.TariffBracket.MaxVolume?.ToString() ?? "no limit") m³)
+                    </span>
+                }
+                else
+                {
+                    <span class="text-danger">No tariff applied</span>
+                }
+            </dd>
+        </dl>
+
+        <h5 class="mt-4">Meter Info</h5>
+        <dl class="row">
+            <dt class="col-sm-4">Serial Number</dt>
+            <dd class="col-sm-8">@Model.Consumption?.Meter?.SerialNumber</dd>
+
+            <dt class="col-sm-4">Customer</dt>
+            <dd class="col-sm-8">
+                @Model.Consumption?.Meter?.Customer?.FullName
+            </dd>
+
+        </dl>
+
+    </div>
+</div>
+
+<a asp-action="Invoices" asp-controller="CustomerArea" class="btn btn-secondary mt-3">Back to Invoices</a>

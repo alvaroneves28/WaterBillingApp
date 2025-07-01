@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WaterBillingApp.Data;
 using WaterBillingApp.Data.Entities;
-using WaterBillingApp.Models;
 
 namespace WaterBillingApp.Controllers
 {
@@ -16,7 +14,7 @@ namespace WaterBillingApp.Controllers
         }
 
         // Exibir todas as tarifas
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> ManageTariffs()
         {
             var tariffs = await _context.TariffBrackets.ToListAsync();
             return View(tariffs);
@@ -36,7 +34,7 @@ namespace WaterBillingApp.Controllers
             {
                 _context.TariffBrackets.Add(model);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(ManageTariffs));
             }
             return View(model);
         }
@@ -53,13 +51,18 @@ namespace WaterBillingApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(TariffBracket model)
         {
-            if (ModelState.IsValid)
-            {
-                _context.TariffBrackets.Update(model);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(model);
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var existing = await _context.TariffBrackets.FindAsync(model.Id);
+            if (existing == null) return NotFound();
+
+            existing.MinVolume = model.MinVolume;
+            existing.MaxVolume = model.MaxVolume;
+            existing.PricePerCubicMeter = model.PricePerCubicMeter;
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(ManageTariffs));
         }
 
         // Excluir tarifa
@@ -71,6 +74,18 @@ namespace WaterBillingApp.Controllers
             _context.TariffBrackets.Remove(tariff);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var tariff = await _context.TariffBrackets.FindAsync(id);
+            if (tariff == null) return NotFound();
+
+            _context.TariffBrackets.Remove(tariff);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(ManageTariffs));
         }
     }
 }

@@ -22,7 +22,7 @@ namespace WaterBillingApp.Data.Entities
 
         public int Reading { get; set; }
 
-        public int TariffBracketId { get; set; }
-        public TariffBracket TariffBracket { get; set; }
+        public int? TariffBracketId { get; set; }
+        public TariffBracket? TariffBracket { get; set; }
     }
 }

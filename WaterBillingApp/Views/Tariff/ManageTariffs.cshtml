@@ -1,0 +1,35 @@
+﻿@model IEnumerable<WaterBillingApp.Data.Entities.TariffBracket>
+
+@{
+    ViewData["Title"] = "Manage Tariffs";
+}
+
+<h1>Tariff Management</h1>
+
+<a asp-action="Create" class="btn btn-success">Add New Tariff</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Minimum Volume</th>
+            <th>Maximum Volume</th>
+            <th>Price per m³</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var tariff in Model)
+        {
+            <tr>
+                <td>@tariff.MinVolume</td>
+                <td>@(tariff.MaxVolume.HasValue? tariff.MaxVolume.Value.ToString() : "No limit")</td>
+                <td>@tariff.PricePerCubicMeter €</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@tariff.Id" class="btn btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@tariff.Id" class="btn btn-danger"
+                       onclick="return confirm('Are you sure you want to delete this tariff?');">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

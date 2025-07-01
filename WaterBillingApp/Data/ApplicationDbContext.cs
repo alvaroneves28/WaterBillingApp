@@ -10,9 +10,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     }
 
     public DbSet<Customer> Customers { get; set; }
-    public DbSet<Meter> Meters { get; set; }  
+    public DbSet<Meter> Meters { get; set; }
     public DbSet<Consumption> Consumptions { get; set; }
-    public DbSet<Invoice> Invoices { get; set; } 
+    public DbSet<Invoice> Invoices { get; set; }
     public DbSet<TariffBracket> TariffBrackets { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -21,7 +21,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
         modelBuilder.Entity<TariffBracket>()
             .Property(t => t.MaxVolume)
+            .HasPrecision(10, 3) // <-- Definido para evitar truncamento
             .IsRequired(false);
+
+        modelBuilder.Entity<TariffBracket>()
+            .Property(t => t.MinVolume)
+            .HasPrecision(10, 3); // <-- Adicionado para evitar warnings
+
+        modelBuilder.Entity<TariffBracket>()
+            .Property(t => t.PricePerCubicMeter)
+            .HasPrecision(10, 4);
 
         modelBuilder.Entity<ApplicationUser>()
             .HasOne(u => u.Customer)
@@ -29,11 +38,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasForeignKey<Customer>(c => c.ApplicationUserId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder.Entity<TariffBracket>()
-            .Property(t => t.PricePerCubicMeter)
-            .HasPrecision(10, 4);
-
-        
         modelBuilder.Entity<Customer>()
             .HasMany(c => c.Meters)
             .WithOne(m => m.Customer)
@@ -51,5 +55,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(c => c.Volume)
                 .HasPrecision(18, 2);
         });
+
+        modelBuilder.Entity<Consumption>()
+                    .HasOne(c => c.TariffBracket)
+                    .WithMany()
+                    .HasForeignKey(c => c.TariffBracketId)
+                    .OnDelete(DeleteBehavior.Restrict);
     }
 }

@@ -1,26 +1,27 @@
 ﻿@model WaterBillingApp.Data.Entities.TariffBracket
 
 @{
-    ViewData["Title"] = "Adicionar Tarifa";
+    ViewData["Title"] = "Create Tariff";
 }
 
-<h1>Adicionar Nova Tarifa</h1>
+<h1>Create Tariff</h1>
 
 <form asp-action="Create" method="post">
     <div class="form-group">
-        <label asp-for="MinVolume">Volume Mínimo</label>
-        <input asp-for="MinVolume" type="number" class="form-control" required />
+        <label asp-for="MinVolume" class="form-label"></label>
+        <input asp-for="MinVolume" class="form-control" />
+        <span asp-validation-for="MinVolume" class="text-danger"></span>
     </div>
-
     <div class="form-group">
-        <label asp-for="MaxVolume">Volume Máximo</label>
-        <input asp-for="MaxVolume" type="number" class="form-control" />
+        <label asp-for="MaxVolume" class="form-label"></label>
+        <input asp-for="MaxVolume" class="form-control" />
+        <span asp-validation-for="MaxVolume" class="text-danger"></span>
     </div>
-
     <div class="form-group">
-        <label asp-for="PricePerCubicMeter">Preço por m³ (€)</label>
-        <input asp-for="PricePerCubicMeter" type="number" step="0.01" class="form-control" required />
+        <label asp-for="PricePerCubicMeter" class="form-label"></label>
+        <input asp-for="PricePerCubicMeter" class="form-control" />
+        <span asp-validation-for="PricePerCubicMeter" class="text-danger"></span>
     </div>
-
-    <button type="submit" class="btn btn-primary">Salvar Tarifa</button>
+    <button type="submit" class="btn btn-primary mt-3">Create</button>
+    <a asp-action="ManageTariffs" asp-controller="Tariff" class="btn btn-secondary mt-3">Cancel</a>
 </form>
