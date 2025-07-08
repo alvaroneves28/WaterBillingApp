@@ -16,14 +16,16 @@ public class CustomerAreaController : Controller
     private readonly IMeterRepository _meterRepository;
     private readonly ICustomerRepository _customerRepository;
     private readonly IInvoiceRepository _invoiceRepository;
+    private readonly INotificationRepository _notificationRepository;
 
-    public CustomerAreaController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMeterRepository meterRepository, ICustomerRepository customerRepository, IInvoiceRepository invoiceRepository)
+    public CustomerAreaController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMeterRepository meterRepository, ICustomerRepository customerRepository, IInvoiceRepository invoiceRepository, INotificationRepository notificationRepository)
     {
         _context = context;
         _userManager = userManager;
         _meterRepository = meterRepository;
         _customerRepository = customerRepository;
         _invoiceRepository = invoiceRepository;
+        _notificationRepository = notificationRepository;
     }
 
     public async Task<IActionResult> Index()
@@ -33,12 +35,19 @@ public class CustomerAreaController : Controller
 
         var pendingInvoice = await _invoiceRepository.GetPendingInvoiceForCustomerAsync(customer.Id);
 
+        var notifications = await _notificationRepository.GetUnreadNotificationsAsync(customer.Id);
+
         var model = new CustomerDashboardViewModel
         {
             CustomerName = customer.FullName,
             HasPendingInvoice = pendingInvoice != null,
-            PendingInvoiceId = pendingInvoice?.Id
+            PendingInvoiceId = pendingInvoice?.Id,
+            Notifications = notifications
         };
+
+        
+        await _notificationRepository.MarkAllAsReadAsync(customer.Id);
+        await _notificationRepository.SaveAsync();
 
         return View(model);
     }

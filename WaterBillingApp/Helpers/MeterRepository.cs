@@ -53,10 +53,18 @@ public class MeterRepository : IMeterRepository
     public async Task DeleteAsync(int id)
     {
         var meter = await _context.Meters.FindAsync(id);
-        if (meter != null)
+        if (meter == null)
+            throw new KeyNotFoundException("Meter not found.");
+
+        _context.Meters.Remove(meter);
+
+        try
         {
-            _context.Meters.Remove(meter);
             await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex)
+        {
+            throw new InvalidOperationException("Unable to delete the meter due to existing dependencies.");
         }
     }
 
@@ -84,6 +92,12 @@ public class MeterRepository : IMeterRepository
             .Where(m => m.CustomerId == customerId && m.IsActive)
             .ToListAsync();
     }
+
+    public async Task SaveAsync()
+    {
+        await _context.SaveChangesAsync();
+    }
+
 
 
 }

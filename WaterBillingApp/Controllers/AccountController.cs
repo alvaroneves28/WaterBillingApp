@@ -231,7 +231,7 @@ namespace WaterBillingApp.Controllers
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
             {
-                // Para não revelar se o email existe ou não
+                
                 TempData["StatusMessage"] = "If an account with that email exists, a reset link has been sent.";
                 return RedirectToAction(nameof(ForgotPassword));
             }

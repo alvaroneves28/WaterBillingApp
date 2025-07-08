@@ -14,6 +14,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Consumption> Consumptions { get; set; }
     public DbSet<Invoice> Invoices { get; set; }
     public DbSet<TariffBracket> TariffBrackets { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
+    public DbSet<MeterRequest> MeterRequests { get; set; }
+
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -61,5 +65,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                     .WithMany()
                     .HasForeignKey(c => c.TariffBracketId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+        foreach (var foreignKey in modelBuilder.Model.GetEntityTypes()
+             .SelectMany(e => e.GetForeignKeys()))
+        {
+            if (foreignKey.DeleteBehavior == DeleteBehavior.Cascade)
+            {
+                foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
+            }
+        }
     }
 }

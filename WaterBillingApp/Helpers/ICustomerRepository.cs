@@ -10,7 +10,6 @@ namespace WaterBillingApp.Helpers
         Task UpdateAsync(Customer customer);
         Task DeleteAsync(int id);
         Task<Customer?> GetByUserIdAsync(string userId);
-
-
+     
     }
 }

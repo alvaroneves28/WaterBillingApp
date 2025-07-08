@@ -64,6 +64,8 @@ namespace WaterBillingApp
             builder.Services.AddScoped<IConsumptionRepository, ConsumptionRepository>();
             builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
             builder.Services.AddSingleton(x => new BlobServiceClient(builder.Configuration.GetConnectionString("AzureBlobStorage")));
+            builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+            builder.Services.AddScoped<IMeterRequestRepository, MeterRequestRepository>();
 
 
             builder.Services.ConfigureApplicationCookie(options =>
@@ -128,9 +130,11 @@ namespace WaterBillingApp
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
+
+            app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

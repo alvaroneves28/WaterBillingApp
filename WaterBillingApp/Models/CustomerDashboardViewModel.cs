@@ -1,4 +1,6 @@
-﻿namespace WaterBillingApp.Models
+﻿using WaterBillingApp.Data.Entities;
+
+namespace WaterBillingApp.Models
 {
     public class CustomerDashboardViewModel
     {
@@ -7,5 +9,8 @@
         public bool HasPendingInvoice { get; set; }
 
         public int? PendingInvoiceId { get; set; }
+
+
+        public List<Notification> Notifications { get; set; } = new();
     }
 }

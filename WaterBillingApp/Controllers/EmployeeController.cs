@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WaterBillingApp.Data.Entities;
 using WaterBillingApp.Helpers;
 using WaterBillingApp.Models;
@@ -6,16 +7,22 @@ using WaterBillingApp.Models;
 public class EmployeeController : Controller
 {
     private readonly IMeterRepository _meterRepository;
+    private readonly INotificationRepository _notificationRepository;
+    private readonly IMeterRequestRepository _meterRequestRepository;
 
-    public EmployeeController(IMeterRepository meterRepository)
+    public EmployeeController(IMeterRepository meterRepository, INotificationRepository notificationRepository, IMeterRequestRepository meterRequestRepository)
     {
         _meterRepository = meterRepository;
+        _notificationRepository = notificationRepository;
+        _meterRequestRepository = meterRequestRepository;
     }
 
     public async Task<IActionResult> Index()
     {
         var pendingMeters = await _meterRepository.GetPendingMetersAsync();
         var activeMeters = await _meterRepository.GetActiveMetersAsync();
+
+        var pendingMeterRequests = await _meterRequestRepository.GetPendingRequestsAsync();
 
         var viewModel = new MetersDashboardViewModel
         {
@@ -37,20 +44,30 @@ public class EmployeeController : Controller
                 CustomerName = m.Customer?.FullName ?? "N/A",
                 CustomerId = m.CustomerId,
                 Status = m.Status,
-
                 LastConsumption = m.Consumptions
-               .OrderByDescending(c => c.Date)
-               .Select(c => new ConsumptionViewModel
-               {
-                   Id = c.Id,
-                   Reading = c.Reading,
-                   Volume = c.Volume,
-                   Date = c.Date
-               })
-               .FirstOrDefault(),
+                   .OrderByDescending(c => c.Date)
+                   .Select(c => new ConsumptionViewModel
+                   {
+                       Id = c.Id,
+                       Reading = c.Reading,
+                       Volume = c.Volume,
+                       Date = c.Date
+                   })
+                   .FirstOrDefault(),
 
                 LastConsumptionValue = m.Consumptions.OrderByDescending(c => c.Date).FirstOrDefault()?.Volume,
                 LastConsumptionDate = m.Consumptions.OrderByDescending(c => c.Date).FirstOrDefault()?.Date
+            }),
+            PendingMeterRequests = pendingMeterRequests.Select(r => new MeterRequestViewModel
+            {
+                Id = r.Id,
+                Name = r.RequesterName,
+                Email = r.RequesterEmail,
+                NIF = r.NIF,
+                Address = r.Address,
+                Phone = r.Phone,
+                RequestDate = r.RequestDate,
+                Status = r.Status.ToString()
             })
         };
 
@@ -96,12 +113,25 @@ public class EmployeeController : Controller
             return NotFound();
         }
 
+        bool hasConsumptions = meter.Consumptions != null && meter.Consumptions.Any();
+        
+
+        if (hasConsumptions)
+        {
+            TempData["StatusMessage"] = "Cannot delete meter because it has consumption records.";
+            return RedirectToAction(nameof(Index));
+        }
+
         await _meterRepository.DeleteAsync(id);
         TempData["StatusMessage"] = "Meter deleted successfully.";
-        return RedirectToAction("ManageMeters");
+        return RedirectToAction(nameof(Index));
     }
 
-
-
+    [Authorize(Roles = "Employee")]
+    public async Task<IActionResult> Notifications()
+    {
+        var notifications = await _notificationRepository.GetEmployeeNotificationsAsync();
+        return View(notifications);
+    }
 
 }

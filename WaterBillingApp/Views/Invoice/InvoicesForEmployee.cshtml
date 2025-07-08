@@ -1,26 +1,18 @@
 ﻿@model IEnumerable<WaterBillingApp.Data.Entities.Invoice>
 
 @{
-    ViewData["Title"] = "Invoices";
+    ViewData["Title"] = "All Invoices";
 }
 
-<h1>@ViewData["Title"]</h1>
-
-@if (TempData["StatusMessage"] != null)
-{
-    <div class="alert alert-success">@TempData["StatusMessage"]</div>
-}
+<h1>All Invoices</h1>
 
 <table class="table table-striped">
     <thead>
         <tr>
             <th>Invoice ID</th>
             <th>Issue Date</th>
-            <th>Consumption ID</th>
-            <th>Meter Serial Number</th>
-            <th>Customer</th>
-            <th>Total Amount (€)</th>
             <th>Status</th>
+            <th>Total Amount</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -30,11 +22,8 @@
             <tr>
                 <td>@invoice.Id</td>
                 <td>@invoice.IssueDate.ToString("dd/MM/yyyy")</td>
-                <td>@invoice.ConsumptionId</td>
-                <td>@invoice.Consumption?.Meter?.SerialNumber</td>
-                <td>@(invoice.Consumption?.Meter?.Customer?.FullName ?? "N/A")</td>
-                <td>@invoice.TotalAmount.ToString("N2")</td>
-                <td>@invoice.Status.ToString()</td>
+                <td>@invoice.Status</td>
+                <td>@invoice.TotalAmount.ToString("C")</td>
                 <td>
                     <a asp-action="DetailsForEmployee" asp-route-id="@invoice.Id" class="btn btn-primary btn-sm">Details</a>
                 </td>
@@ -42,3 +31,5 @@
         }
     </tbody>
 </table>
+
+<a asp-action="Index" asp-controller="Employee" class="btn btn-secondary mt-3">Back to Dashboard</a>

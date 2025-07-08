@@ -10,5 +10,7 @@ namespace WaterBillingApp.Helpers
         Task AddAsync(Consumption consumption);
         Task UpdateAsync(Consumption consumption);
         Task DeleteAsync(int id);
+
+        Task<bool> AnyByMeterIdAsync(int meterId);
     }
 }

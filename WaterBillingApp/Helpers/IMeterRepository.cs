@@ -10,10 +10,9 @@ namespace WaterBillingApp.Helpers
         Task UpdateAsync(Meter meter);
         Task DeleteAsync(int id);
         Task<IEnumerable<Meter>> GetPendingMetersAsync();
-
         Task<IEnumerable<Meter>> GetActiveMetersAsync();
         Task<IEnumerable<Meter>> GetMetersByCustomerAsync(int customerId);
-
+        Task SaveAsync();
 
     }
 }

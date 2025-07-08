@@ -2,28 +2,35 @@
 
 namespace WaterBillingApp.Data.Entities
 {
+    public enum MeterRequestStatus
+    {
+        Pending,
+        Approved,
+        Rejected
+    }
     public class MeterRequest
     {
         public int Id { get; set; }
 
         [Required]
-        [StringLength(100)]
-        public string Name { get; set; }
+        public string RequesterName { get; set; }
 
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
+        public string RequesterEmail { get; set; }
 
         [Required]
-        [StringLength(200)]
+        public string NIF { get; set; }
+
+        [Required]
         public string Address { get; set; }
 
         [Required]
-        [DataType(DataType.Date)]
+        [Phone]
+        public string Phone { get; set; }
+
         public DateTime RequestDate { get; set; }
 
-        [Required]
-        [StringLength(20)]
-        public string Status { get; set; }
+        public MeterRequestStatus Status { get; set; }
     }
 }

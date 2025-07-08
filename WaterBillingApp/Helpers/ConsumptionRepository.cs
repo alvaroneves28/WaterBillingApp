@@ -57,4 +57,10 @@ public class ConsumptionRepository : IConsumptionRepository
             await _context.SaveChangesAsync();
         }
     }
+
+    public async Task<bool> AnyByMeterIdAsync(int meterId)
+    {
+        return await _context.Consumptions.AnyAsync(c => c.MeterId == meterId);
+    }
+
 }

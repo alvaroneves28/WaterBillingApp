@@ -1,0 +1,20 @@
+﻿@{
+    ViewData["Title"] = "Error";
+}
+
+<h1 class="text-danger">An unexpected error occurred.</h1>
+
+<p>
+    Sorry, something went wrong while processing your request.
+</p>
+
+@if (ViewData["ExceptionMessage"] != null)
+{
+    <div class="alert alert-danger">
+        <strong>Exception Message:</strong> @ViewData["ExceptionMessage"] <br />
+        <strong>Path:</strong> @ViewData["ExceptionPath"] <br />
+        <pre>@ViewData["StackTrace"]</pre>
+    </div>
+}
+
+<a asp-controller="Home" asp-action="Index" class="btn btn-primary mt-3">Go back to Home</a>

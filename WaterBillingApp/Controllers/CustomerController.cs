@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using WaterBillingApp.Data.Entities;
 using WaterBillingApp.Helpers;
@@ -71,7 +72,20 @@ namespace WaterBillingApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _customerRepository.DeleteAsync(id);
+            try
+            {
+                await _customerRepository.DeleteAsync(id);
+                TempData["SuccessMessage"] = "Customer deleted successfully.";
+            }
+            catch (KeyNotFoundException)
+            {
+                TempData["ErrorMessage"] = "Customer not found.";
+            }
+            catch (DbUpdateException)
+            {
+                TempData["ErrorMessage"] = "Unable to delete the customer because there are associated records (meters, invoices or consumptions).";
+            }
+
             return RedirectToAction(nameof(Index));
         }
 

@@ -1,0 +1,20 @@
+﻿@{
+    int statusCode = (int)ViewData["StatusCode"];
+    string errorMessage = ViewData["ErrorMessage"] as string ?? "Error occurred.";
+    ViewData["Title"] = $"Error {statusCode}";
+}
+
+<h1 class="text-warning">Error @statusCode</h1>
+
+<p>@errorMessage</p>
+
+@if (ViewData["OriginalPath"] != null)
+{
+    <p>Original path: <strong>@ViewData["OriginalPath"]</strong></p>
+}
+@if (ViewData["OriginalQueryString"] != null && !string.IsNullOrWhiteSpace(ViewData["OriginalQueryString"].ToString()))
+{
+    <p>Query string: <strong>@ViewData["OriginalQueryString"]</strong></p>
+}
+
+<a asp-controller="Home" asp-action="Index" class="btn btn-primary mt-3">Go back to Home</a>

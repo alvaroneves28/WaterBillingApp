@@ -41,11 +41,11 @@ namespace WaterBillingApp.Repositories
         public async Task DeleteAsync(int id)
         {
             var customer = await _context.Customers.FindAsync(id);
-            if (customer != null)
-            {
-                _context.Customers.Remove(customer);
-                await _context.SaveChangesAsync();
-            }
+            if (customer == null)
+                throw new KeyNotFoundException("Customer not found.");
+
+            _context.Customers.Remove(customer);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<Customer?> GetByUserIdAsync(string userId)

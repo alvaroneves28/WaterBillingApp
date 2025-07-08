@@ -1,0 +1,22 @@
+﻿@using WaterBillingApp.Data.Entities
+@model IEnumerable<Notification>
+
+<h2>Employee Notifications</h2>
+
+@if (!Model.Any())
+{
+    <p>No new notifications.</p>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var notif in Model)
+        {
+            <li class="list-group-item">
+                @notif.Message <br />
+                <small class="text-muted">@notif.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                <a asp-controller="MeterRequest" asp-action="Details" asp-route-id="@notif.Id" class="btn btn-sm btn-primary float-end">View Request</a>
+            </li>
+        }
+    </ul>
+}

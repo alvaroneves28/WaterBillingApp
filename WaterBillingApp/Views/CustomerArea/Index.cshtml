@@ -5,12 +5,30 @@
 }
 
 <h1>Welcome, @Model.CustomerName!</h1>
+@if (TempData["StatusMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["StatusMessage"]
+    </div>
+}
+@if (Model.Notifications.Any())
+{
+    <div class="alert alert-info">
+        <strong>New Notifications:</strong>
+        <ul>
+            @foreach (var notif in Model.Notifications)
+            {
+                <li>@notif.Message (@notif.CreatedAt.ToString("dd/MM/yyyy HH:mm"))</li>
+            }
+        </ul>
+    </div>
+}
 
 @if (Model.HasPendingInvoice)
 {
     <div class="alert alert-warning">
         You have a pending invoice to pay.
-        <a asp-controller="Invoice" asp-action="Details" asp-route-id="@Model.PendingInvoiceId" class="btn btn-warning btn-sm">
+        <a asp-controller="Invoice" asp-action="DetailsForCustomer" asp-route-id="@Model.PendingInvoiceId" class="btn btn-warning btn-sm">
             View Invoice
         </a>
     </div>
