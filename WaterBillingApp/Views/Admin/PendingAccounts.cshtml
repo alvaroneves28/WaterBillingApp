@@ -15,7 +15,10 @@ else
             <li class="list-group-item">
                 @notif.Message <br />
                 <small class="text-muted">@notif.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
-                <a asp-action="CreateUserAccount" asp-route-email="@notif.Message.Split(" ").Last()" class="btn btn-primary btn-sm float-end">Create Account</a>
+                <form asp-action="CreateUserFromNotification" method="post" class="mt-2">
+                    <input type="hidden" name="notificationId" value="@notif.Id" />
+                    <button type="submit" class="btn btn-primary btn-sm float-end">Create Account</button>
+                </form>
             </li>
         }
     </ul>

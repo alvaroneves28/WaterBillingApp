@@ -9,12 +9,14 @@ public class EmployeeController : Controller
     private readonly IMeterRepository _meterRepository;
     private readonly INotificationRepository _notificationRepository;
     private readonly IMeterRequestRepository _meterRequestRepository;
+    private readonly ICustomerRepository _customerRepository;
 
-    public EmployeeController(IMeterRepository meterRepository, INotificationRepository notificationRepository, IMeterRequestRepository meterRequestRepository)
+    public EmployeeController(IMeterRepository meterRepository, INotificationRepository notificationRepository, IMeterRequestRepository meterRequestRepository, ICustomerRepository customerRepository)
     {
         _meterRepository = meterRepository;
         _notificationRepository = notificationRepository;
         _meterRequestRepository = meterRequestRepository;
+        _customerRepository = customerRepository;
     }
 
     public async Task<IActionResult> Index()
@@ -74,7 +76,6 @@ public class EmployeeController : Controller
         return View(viewModel);
     }
 
-    
     [HttpPost]
     public async Task<IActionResult> Approve(int id)
     {

@@ -25,12 +25,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
         modelBuilder.Entity<TariffBracket>()
             .Property(t => t.MaxVolume)
-            .HasPrecision(10, 3) // <-- Definido para evitar truncamento
+            .HasPrecision(10, 3) 
             .IsRequired(false);
 
         modelBuilder.Entity<TariffBracket>()
             .Property(t => t.MinVolume)
-            .HasPrecision(10, 3); // <-- Adicionado para evitar warnings
+            .HasPrecision(10, 3);  
 
         modelBuilder.Entity<TariffBracket>()
             .Property(t => t.PricePerCubicMeter)

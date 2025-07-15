@@ -1,20 +1,30 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Admin Panel";
+    var pendingCount = (int)(ViewData["PendingAccountsCount"] ?? 0);
 }
 
 <h1>@ViewData["Title"]</h1>
 
-<p>Welcome to the admin dashboard!</p>
+@if (pendingCount > 0)
+{
+    <div class="alert alert-warning">
+        You have @pendingCount account(s) pending activation. <a asp-controller="Admin" asp-action="PendingAccounts">Review now</a>.
+    </div>
+}
 
+<p>Welcome to the admin dashboard!</p>
 
 <div class="dropdown">
     <button class="btn btn-primary dropdown-toggle" type="button" id="actionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
         Choose an action
+        @if (pendingCount > 0)
+        {
+            <span class="badge bg-danger ms-2">@pendingCount</span>
+        }
     </button>
     <ul class="dropdown-menu" aria-labelledby="actionDropdown">
         <li>
-            <a class="dropdown-item" asp-controller="Account" asp-action="Register">Registar nova conta</a>
+            <a class="dropdown-item" asp-controller="Account" asp-action="Register">Register new account</a>
         </li>
         <li>
             <a class="dropdown-item" asp-controller="Customer" asp-action="Index">Manage customers</a>
@@ -25,6 +35,14 @@
         <li>
             <a class="dropdown-item" asp-controller="Tariff" asp-action="ManageTariffs">Manage Tariffs</a>
         </li>
+        <li>
+            <a class="dropdown-item" asp-controller="Admin" asp-action="PendingAccounts">
+                Pending Accounts
+                @if (pendingCount > 0)
+                {
+                    <span class="badge bg-danger ms-2">@pendingCount</span>
+                }
+            </a>
+        </li>
     </ul>
 </div>
-

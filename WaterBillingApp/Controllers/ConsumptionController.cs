@@ -24,6 +24,47 @@ public class ConsumptionController : Controller
         if (meter == null || !meter.IsActive)
             return NotFound();
 
+        var today = DateTime.Today;
+        var currentMonthStart = new DateTime(today.Year, today.Month, 1);
+        var nextMonthStart = currentMonthStart.AddMonths(1);
+
+        var hasCurrentMonthReading = meter.Consumptions
+            .Any(c => c.Date >= currentMonthStart && c.Date < nextMonthStart);
+
+      
+        if (today.Day > 20 && !hasCurrentMonthReading)
+        {
+            var lastConsumption = meter.Consumptions
+                .OrderByDescending(c => c.Date)
+                .FirstOrDefault();
+
+            int lastReading = lastConsumption?.Reading ?? 0;
+            int lastVolume = (int)(lastConsumption?.Volume ?? 0);
+
+           
+            var estimatedReading = lastReading + lastVolume;
+
+            var tariffBracket = await _context.TariffBrackets
+                .Where(tb => tb.MinVolume <= lastVolume &&
+                            (tb.MaxVolume == null || lastVolume <= tb.MaxVolume))
+                .OrderBy(tb => tb.MinVolume)
+                .FirstOrDefaultAsync();
+
+            var autoConsumption = new Consumption
+            {
+                MeterId = meter.Id,
+                Date = today,
+                Reading = estimatedReading,
+                Volume = lastVolume,
+                TariffBracket = tariffBracket
+            };
+
+            await _consumptionRepository.AddAsync(autoConsumption);
+
+            TempData["StatusMessage"] = "No manual reading found. Automatic consumption was registered.";
+            return RedirectToAction("Index", "CustomerArea");
+        }
+
         var model = new AddReadingViewModel
         {
             MeterId = meter.Id,

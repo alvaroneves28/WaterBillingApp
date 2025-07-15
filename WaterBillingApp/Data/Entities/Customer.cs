@@ -30,9 +30,9 @@ namespace WaterBillingApp.Data.Entities
         [Phone]
         public string Phone { get; set; }
 
-        [Required]
-        public string ApplicationUserId { get; set; }
-        public ApplicationUser ApplicationUser { get; set; }
+        
+        public string? ApplicationUserId { get; set; }
+        public ApplicationUser? ApplicationUser { get; set; }
 
         public ICollection<Meter> Meters { get; set; }
     }

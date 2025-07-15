@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection.Metadata.Ecma335;
 using WaterBillingApp.Data.Entities;
 using WaterBillingApp.Helpers;
 using WaterBillingApp.Models;
@@ -28,8 +29,12 @@ namespace WaterBillingApp.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var pendingCount = await _notificationRepository
+            .CountAsync(n => !n.IsRead && n.Message.Contains("Please create the user account"));
+
+            ViewData["PendingAccountsCount"] = pendingCount;
             return View();
         }
 
@@ -209,6 +214,63 @@ namespace WaterBillingApp.Controllers
             return RedirectToAction("PendingRequests");
         }
 
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateUserFromNotification(int notificationId)
+        {
+            var notification = await _context.Notifications.FindAsync(notificationId);
+            if (notification == null || notification.IsRead)
+                return NotFound();
+
+            var customer = await _customerRepository.GetByIdAsync(notification.CustomerId.Value);
+            if (customer == null)
+                return NotFound();
+
+            var existingUser = await _userManager.FindByEmailAsync(customer.Email);
+            if (existingUser != null)
+            {
+                TempData["StatusMessage"] = "A user with this email already exists.";
+                return RedirectToAction("PendingAccounts");
+            }
+
+            var newUser = new ApplicationUser
+            {
+                UserName = customer.Email,
+                Email = customer.Email,
+                EmailConfirmed = true,
+                FullName = customer.FullName,
+                Address = customer.Address,
+                Phone = customer.Phone, 
+                NIF = customer.NIF,     
+                IsActive = true
+            };
+
+            var tempPassword = "Aa123456!";
+            var result = await _userManager.CreateAsync(newUser, tempPassword);
+
+            if (!result.Succeeded)
+            {
+                TempData["StatusMessage"] = "Failed to create account: " + string.Join(", ", result.Errors.Select(e => e.Description));
+                return RedirectToAction("PendingAccounts");
+            }
+
+            await _userManager.AddToRoleAsync(newUser, "Customer");
+
+            customer.ApplicationUserId = newUser.Id;
+            await _customerRepository.UpdateAsync(customer);
+
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(newUser);
+            var resetLink = Url.Action("ResetPassword", "Account", new { token = resetToken, email = newUser.Email }, Request.Scheme);
+
+            await _emailSender.SendEmailAsync(newUser.Email, "Account Created",
+                $"Hello {customer.FullName},<br><br>Your account has been created. Click <a href='{resetLink}'>here</a> to set your password.<br><br>Thank you.");
+
+            notification.IsRead = true;
+            await _notificationRepository.SaveChangesAsync();
+
+            TempData["StatusMessage"] = "Account successfully created and notification marked as read.";
+            return RedirectToAction("PendingAccounts");
+        }
 
     }
 }

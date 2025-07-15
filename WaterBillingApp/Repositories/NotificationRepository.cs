@@ -1,13 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
+using WaterBillingApp.Data;
 using WaterBillingApp.Data.Entities;
+using WaterBillingApp.Repositories;
 
 namespace WaterBillingApp.Helpers
 {
-    public class NotificationRepository : INotificationRepository
+    public class NotificationRepository : GenericRepository<Notification>, INotificationRepository
     {
         private readonly ApplicationDbContext _context;
 
-        public NotificationRepository(ApplicationDbContext context)
+        public NotificationRepository(ApplicationDbContext context) : base(context)
         {
             _context = context;
         }
@@ -15,6 +18,7 @@ namespace WaterBillingApp.Helpers
         public async Task AddNotificationAsync(Notification notification)
         {
             await _context.Notifications.AddAsync(notification);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<List<Notification>> GetUnreadNotificationsAsync(int clientId)
@@ -33,10 +37,7 @@ namespace WaterBillingApp.Helpers
 
             foreach (var n in notifs)
                 n.IsRead = true;
-        }
 
-        public async Task SaveAsync()
-        {
             await _context.SaveChangesAsync();
         }
 
@@ -56,6 +57,9 @@ namespace WaterBillingApp.Helpers
                 .ToListAsync();
         }
 
-
+        public async Task<int> CountAsync(Expression<Func<Notification, bool>> predicate)
+        {
+            return await _context.Notifications.CountAsync(predicate);
+        }
     }
 }

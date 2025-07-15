@@ -47,7 +47,7 @@ public class CustomerAreaController : Controller
 
         
         await _notificationRepository.MarkAllAsReadAsync(customer.Id);
-        await _notificationRepository.SaveAsync();
+        await _notificationRepository.SaveChangesAsync();
 
         return View(model);
     }

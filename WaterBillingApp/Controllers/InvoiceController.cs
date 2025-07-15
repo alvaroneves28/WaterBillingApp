@@ -1,5 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Syncfusion.Pdf;
+using Syncfusion.Drawing;
+using Syncfusion.Pdf.Graphics;
 using WaterBillingApp.Data.Entities;
 using WaterBillingApp.Helpers;
 using WaterBillingApp.Repositories;
@@ -68,7 +72,7 @@ namespace WaterBillingApp.Controllers
             };
 
             await _notificationRepository.AddNotificationAsync(notification); 
-            await _notificationRepository.SaveAsync(); 
+            await _notificationRepository.SaveChangesAsync(); 
 
             TempData["StatusMessage"] = "Invoice successfully issued.";
             return RedirectToAction("Index", "Employee");
@@ -134,6 +138,77 @@ namespace WaterBillingApp.Controllers
             }
 
             return View("DetailsForEmployee", invoice);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DownloadSignedPdf([FromBody] InvoiceSignature invoiceSignature)
+        {
+            var invoice = await _invoiceRepository.GetInvoiceByIdAsync(invoiceSignature.InvoiceId);
+
+            if (invoice == null)
+                return NotFound();
+
+            byte[] pdfBytes = GeneratePdfSigned(invoice, invoiceSignature.AssinaturaBase64);
+
+            return File(pdfBytes, "application/pdf", $"Fatura_{invoice.Id}.pdf");
+        }
+
+        private byte[] GeneratePdfSigned(Invoice invoice, string assinaturaBase64)
+        {
+            using (PdfDocument document = new PdfDocument())
+            {
+                PdfPage page = document.Pages.Add();
+                PdfGraphics graphics = page.Graphics;
+
+                PdfFont titleFont = new PdfStandardFont(PdfFontFamily.Helvetica, 16, PdfFontStyle.Bold);
+                PdfFont textFont = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+
+                float y = 20;
+
+                graphics.DrawString("Water Invoice", titleFont, PdfBrushes.DarkBlue, new PointF(0, y));
+                y += 30;
+
+                graphics.DrawString($"Invoice ID: {invoice.Id}", textFont, PdfBrushes.Black, new PointF(0, y));
+                y += 20;
+                graphics.DrawString($"Customer: {invoice.Consumption.Meter.Customer.FullName}", textFont, PdfBrushes.Black, new PointF(0, y));
+                y += 20;
+                graphics.DrawString($"Issue Date: {invoice.IssueDate:dd/MM/yyyy}", textFont, PdfBrushes.Black, new PointF(0, y));
+                y += 20;
+                graphics.DrawString($"Total Amount: {invoice.TotalAmount:C}", textFont, PdfBrushes.Black, new PointF(0, y));
+                y += 20;
+                graphics.DrawString($"Status: {invoice.Status}", textFont, PdfBrushes.Black, new PointF(0, y));
+                y += 20;
+                graphics.DrawString($"Consumption: {invoice.Consumption.Volume} m³", textFont, PdfBrushes.Black, new PointF(0, y));
+                y += 40;
+
+       
+                if (!string.IsNullOrEmpty(assinaturaBase64))
+                {
+                    
+                    if (assinaturaBase64.StartsWith("data:image"))
+                    {
+                        var base64Data = assinaturaBase64.Substring(assinaturaBase64.IndexOf(',') + 1);
+                        assinaturaBase64 = base64Data;
+                    }
+
+                    byte[] signatureBytes = Convert.FromBase64String(assinaturaBase64);
+                    using (MemoryStream imageStream = new MemoryStream(signatureBytes))
+                    {
+                        PdfBitmap signatureImage = new PdfBitmap(imageStream);
+                        graphics.DrawString("Customer Signature:", textFont, PdfBrushes.Black, new PointF(0, y));
+                        y += 20;
+                        graphics.DrawImage(signatureImage, new RectangleF(0, y, 200, 100));
+                    }
+                }
+
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    document.Save(stream);
+                    return stream.ToArray();
+                }
+            }
         }
 
 

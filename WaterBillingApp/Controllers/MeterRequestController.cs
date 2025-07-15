@@ -30,10 +30,12 @@ namespace WaterBillingApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AllowAnonymous]
         public async Task<IActionResult> CreateRequest(MeterRequestViewModel model)
         {
-            if (!ModelState.IsValid)
-                return View(model);
+            if (ModelState.IsValid)
+            return View(model);
+            
 
             var meterRequest = new MeterRequest
             {
@@ -46,6 +48,11 @@ namespace WaterBillingApp.Controllers
                 Status = MeterRequestStatus.Pending
             };
 
+            
+            _context.MeterRequests.Add(meterRequest);
+            await _context.SaveChangesAsync();
+
+          
             var notification = new Notification
             {
                 Message = $"New meter request submitted by {meterRequest.RequesterName}.",
@@ -55,14 +62,12 @@ namespace WaterBillingApp.Controllers
             };
 
             await _notificationRepository.AddNotificationAsync(notification);
-            await _notificationRepository.SaveAsync();
-
-            _context.MeterRequests.Add(meterRequest);
-            await _context.SaveChangesAsync();
+            await _notificationRepository.SaveChangesAsync();
 
             TempData["StatusMessage"] = "Meter request submitted successfully. We will contact you soon!";
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("CreateRequest");
         }
+
 
         [Authorize(Roles = "Employee")]
         public async Task<IActionResult> Details(int id)
@@ -87,25 +92,24 @@ namespace WaterBillingApp.Controllers
                 NIF = request.NIF,
                 Address = request.Address,
                 Phone = request.Phone,
-                IsActive = false,
+                IsActive = true,
                 ApplicationUserId = null
             };
 
             await _customerRepository.AddAsync(customer);
             
-
-
             var meter = new Meter
             {
                 CustomerId = customer.Id,
                 SerialNumber = GenerateSerialNumber(),
-                IsActive = true
+                IsActive = true,
+                Status = MeterStatus.Approved
             };
 
             await _meterRepository.AddAsync(meter);
 
             request.Status = MeterRequestStatus.Approved;
-
+            await _context.SaveChangesAsync();
 
             var notification = new Notification
             {
@@ -125,6 +129,21 @@ namespace WaterBillingApp.Controllers
         {
             return "MTR-" + Guid.NewGuid().ToString().Substring(0, 8).ToUpper();
         }
+
+        [HttpPost]
+        [Authorize(Roles = "Employee")]
+        public async Task<IActionResult> RejectRequest(int id)
+        {
+            var request = await _context.MeterRequests.FindAsync(id);
+            if (request == null) return NotFound();
+
+            request.Status = MeterRequestStatus.Rejected;
+            await _context.SaveChangesAsync();
+
+            TempData["StatusMessage"] = "Meter request rejected.";
+            return RedirectToAction("Index", "Employee");
+        }
+
 
 
 
