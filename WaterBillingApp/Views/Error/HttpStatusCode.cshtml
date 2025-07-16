@@ -1,20 +1,29 @@
 ﻿@{
+    // Retrieve the HTTP status code from ViewData (cast to int)
     int statusCode = (int)ViewData["StatusCode"];
+    // Retrieve the error message or use a default if none provided
     string errorMessage = ViewData["ErrorMessage"] as string ?? "Error occurred.";
+    // Set the page title dynamically based on the status code
     ViewData["Title"] = $"Error {statusCode}";
 }
 
+<!-- Display the error status code with a warning text color -->
 <h1 class="text-warning">Error @statusCode</h1>
 
+<!-- Display the error message -->
 <p>@errorMessage</p>
 
+<!-- If the original request path is available, display it -->
 @if (ViewData["OriginalPath"] != null)
 {
     <p>Original path: <strong>@ViewData["OriginalPath"]</strong></p>
 }
+
+<!-- If the original query string is available and not empty, display it -->
 @if (ViewData["OriginalQueryString"] != null && !string.IsNullOrWhiteSpace(ViewData["OriginalQueryString"].ToString()))
 {
     <p>Query string: <strong>@ViewData["OriginalQueryString"]</strong></p>
 }
 
+<!-- Button to return to the home page -->
 <a asp-controller="Home" asp-action="Index" class="btn btn-primary mt-3">Go back to Home</a>

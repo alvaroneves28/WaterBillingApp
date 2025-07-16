@@ -1,0 +1,91 @@
+﻿@model IEnumerable<WaterBillingApp.Models.MeterViewModel>
+
+<!-- Heading for the page -->
+<h2>Active Meters</h2>
+
+<!-- Table listing all meters with relevant details -->
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <!-- Table headers describing each column -->
+            <th>Serial Number</th>
+            <th>Installation Date</th>
+            <th>Customer</th>
+            <th>Last Consumption</th>
+            <th>Last Reading</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+            <th>Invoice</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Loop through each meter in the model -->
+        @foreach (var meter in Model)
+        {
+            // Get the last consumption record for the meter (nullable)
+            var lastConsumption = meter.LastConsumption;
+
+            <tr>
+                <!-- Meter serial number -->
+                <td>@meter.SerialNumber</td>
+
+                <!-- Installation date formatted as dd/MM/yyyy -->
+                <td>@meter.InstallationDate.ToString("dd/MM/yyyy")</td>
+
+                <!-- Customer name associated with this meter -->
+                <td>@meter.CustomerName</td>
+
+                <!-- Display last consumption volume or fallback text -->
+                <td>@(lastConsumption != null ? lastConsumption.Volume.ToString("N2") : "No consumption")</td>
+
+                <!-- Display last reading or fallback text -->
+                <td>@(lastConsumption != null ? lastConsumption.Reading.ToString() : "No reading")</td>
+
+                <!-- Display date of last reading or a dash if none -->
+                <td>@(lastConsumption != null ? lastConsumption.Date.ToString("dd/MM/yyyy") : "-")</td>
+
+                <!-- Display meter status with badge styling -->
+                <td>
+                    @if (meter.IsActive)
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">Pending Approval</span>
+                    }
+                </td>
+
+                <!-- Actions column with delete form -->
+                <td>
+                    <form asp-action="Delete" method="post" class="d-inline"
+                          onsubmit="return confirm('Are you sure you want to delete this meter?');">
+                        <!-- Hidden input to send meter ID -->
+                        <input type="hidden" name="id" value="@meter.Id" />
+                        <!-- Submit button triggers deletion -->
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+
+                <!-- Invoice column shows button to issue invoice if consumption exists -->
+                <td>
+                    @if (lastConsumption != null)
+                    {
+                        <form asp-action="IssueInvoice" asp-controller="Invoice" method="post" class="d-inline">
+                            <!-- Pass the consumption ID to create invoice for -->
+                            <input type="hidden" name="consumptionId" value="@lastConsumption.Id" />
+                            <!-- Button to issue invoice -->
+                            <button type="submit" class="btn btn-primary btn-sm">Issue Invoice</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <!-- Show message if no consumption available -->
+                        <span class="text-muted">No consumption</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

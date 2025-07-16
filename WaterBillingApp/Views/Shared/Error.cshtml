@@ -1,11 +1,14 @@
 ﻿@model ErrorViewModel
+
 @{
+    // Set the page title for display in the browser tab and optionally in layouts
     ViewData["Title"] = "Error";
 }
 
 <h1 class="text-danger">Error.</h1>
 <h2 class="text-danger">An error occurred while processing your request.</h2>
 
+@* If the model contains an error message, display it inside a red alert box *@
 @if (!string.IsNullOrEmpty(Model?.ErrorMessage))
 {
     <div class="alert alert-danger">
@@ -13,6 +16,7 @@
     </div>
 }
 
+@* If the RequestId is available and flagged to show, display it to help track the error in logs *@
 @if (Model != null && Model.ShowRequestId)
 {
     <p>
@@ -22,6 +26,7 @@
 
 <h3>Development Mode</h3>
 <p>
+    @* Inform developers/users about enabling Development environment for detailed error info *@
     Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
 </p>
 <p>

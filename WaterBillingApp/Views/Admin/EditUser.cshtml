@@ -1,64 +1,79 @@
 ﻿@model EditUserViewModel
 
 @{
-    ViewData["Title"] = "Editar Utilizador";
+    // Set the page title, used in the layout and header
+    ViewData["Title"] = "Edit User";
 }
 
+<!-- Page heading displaying the current action -->
 <h1>@ViewData["Title"]</h1>
 
+<!-- Form to edit user details, posts to EditUser action -->
 <form asp-action="EditUser" method="post">
+    <!-- Hidden input for the user's ID (used to identify which user to update) -->
     <input type="hidden" asp-for="Id" />
 
+    <!-- Email input field with label and validation message -->
     <div class="mb-3">
         <label asp-for="Email" class="form-label"></label>
         <input asp-for="Email" class="form-control" />
         <span asp-validation-for="Email" class="text-danger"></span>
     </div>
 
+    <!-- Username input field with label and validation message -->
     <div class="mb-3">
         <label asp-for="UserName" class="form-label"></label>
         <input asp-for="UserName" class="form-control" />
         <span asp-validation-for="UserName" class="text-danger"></span>
     </div>
 
+    <!-- Full name input field -->
     <div class="mb-3">
         <label asp-for="FullName" class="form-label"></label>
         <input asp-for="FullName" class="form-control" />
         <span asp-validation-for="FullName" class="text-danger"></span>
     </div>
 
+    <!-- NIF input field (tax identification number) -->
     <div class="mb-3">
         <label asp-for="NIF" class="form-label"></label>
         <input asp-for="NIF" class="form-control" />
         <span asp-validation-for="NIF" class="text-danger"></span>
     </div>
 
+    <!-- Address input field -->
     <div class="mb-3">
         <label asp-for="Address" class="form-label"></label>
         <input asp-for="Address" class="form-control" />
         <span asp-validation-for="Address" class="text-danger"></span>
     </div>
 
+    <!-- Phone input field -->
     <div class="mb-3">
         <label asp-for="Phone" class="form-label"></label>
         <input asp-for="Phone" class="form-control" />
         <span asp-validation-for="Phone" class="text-danger"></span>
     </div>
 
+    <!-- Checkbox for email confirmation status -->
     <div class="form-check mb-3">
         <input asp-for="EmailConfirmed" class="form-check-input" />
         <label asp-for="EmailConfirmed" class="form-check-label"></label>
     </div>
 
+    <!-- Checkbox to set user as active or inactive -->
     <div class="form-check mb-3">
         <input asp-for="IsActive" class="form-check-input" />
         <label asp-for="IsActive" class="form-check-label"></label>
     </div>
 
-    <button type="submit" class="btn btn-primary">Guardar</button>
-    <a asp-action="ManageUsers" class="btn btn-secondary">Cancelar</a>
+    <!-- Submit button to save changes -->
+    <button type="submit" class="btn btn-primary">Save</button>
+    <!-- Cancel button to go back to user management without saving -->
+    <a asp-action="ManageUsers" class="btn btn-secondary">Cancel</a>
 </form>
 
+<!-- Section to include client-side validation scripts -->
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

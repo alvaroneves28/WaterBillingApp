@@ -1,46 +1,57 @@
 ﻿@model WaterBillingApp.Data.Entities.Customer
 
 @{
-    ViewData["Title"] = "Editar Cliente";
+    // Set the page title for use in layout and browser tab
+    ViewData["Title"] = "Edit Customer";
 }
 
-<h1>Editar Cliente</h1>
+<!-- Page heading -->
+<h1>Edit Customer</h1>
 
+<!-- Form for editing customer details, posts back to Edit action -->
 <form asp-action="Edit" method="post">
+    <!-- Hidden field for the customer ID -->
     <input type="hidden" asp-for="Id" />
 
+    <!-- Input for full name -->
     <div class="form-group">
-        <label asp-for="FullName">Nome Completo</label>
+        <label asp-for="FullName">Full Name</label>
         <input asp-for="FullName" type="text" class="form-control" required />
     </div>
 
+    <!-- Input for NIF (tax number) -->
     <div class="form-group">
         <label asp-for="NIF">NIF</label>
         <input asp-for="NIF" type="text" class="form-control" required />
     </div>
 
+    <!-- Input for email -->
     <div class="form-group">
         <label asp-for="Email">Email</label>
         <input asp-for="Email" type="email" class="form-control" required />
     </div>
 
+    <!-- Input for address -->
     <div class="form-group">
-        <label asp-for="Address">Endereço</label>
+        <label asp-for="Address">Address</label>
         <input asp-for="Address" type="text" class="form-control" required />
     </div>
 
+    <!-- Input for phone number -->
     <div class="form-group">
-        <label asp-for="Phone">Telefone</label>
+        <label asp-for="Phone">Phone</label>
         <input asp-for="Phone" type="tel" class="form-control" required />
     </div>
 
+    <!-- Dropdown to select active status -->
     <div class="form-group">
         <label asp-for="IsActive">Status</label>
         <select asp-for="IsActive" class="form-control">
-            <option value="true">Ativo</option>
-            <option value="false">Inativo</option>
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
         </select>
     </div>
 
-    <button type="submit" class="btn btn-success">Salvar Alterações</button>
+    <!-- Submit button to save changes -->
+    <button type="submit" class="btn btn-success">Save Changes</button>
 </form>

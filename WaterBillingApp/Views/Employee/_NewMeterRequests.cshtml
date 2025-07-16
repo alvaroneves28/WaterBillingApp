@@ -1,0 +1,69 @@
+﻿@model IEnumerable<WaterBillingApp.Models.MeterRequestViewModel>
+
+<!-- Heading for the page -->
+<h2>New Meter Requests</h2>
+
+<!-- Table to display all meter requests with relevant details -->
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <!-- Column headers for request details -->
+            <th>Name</th>
+            <th>Email</th>
+            <th>NIF</th>
+            <th>Address</th>
+            <th>Phone</th>
+            <th>Request Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Loop through each meter request in the model -->
+        @foreach (var request in Model)
+        {
+            <tr>
+                <!-- Display the requester's full name -->
+                <td>@request.Name</td>
+
+                <!-- Display the requester's email -->
+                <td>@request.Email</td>
+
+                <!-- Display the tax identification number (NIF) -->
+                <td>@request.NIF</td>
+
+                <!-- Display the requester's address -->
+                <td>@request.Address</td>
+
+                <!-- Display the requester's phone number -->
+                <td>@request.Phone</td>
+
+                <!-- Display the date the request was submitted, formatted as dd/MM/yyyy -->
+                <td>@request.RequestDate.ToString("dd/MM/yyyy")</td>
+
+                <!-- Show the current status of the request with a warning badge -->
+                <td><span class="badge bg-warning text-dark">@request.Status</span></td>
+
+                <!-- Actions column: Approve and Reject buttons -->
+                <td>
+                    <!-- Approve button posts to ApproveRequest action -->
+                    <form asp-action="ApproveRequest" asp-controller="MeterRequest" method="post" class="d-inline">
+                        <!-- Hidden input sending the request ID -->
+                        <input type="hidden" name="id" value="@request.Id" />
+                        <!-- Submit button styled as green 'Approve' -->
+                        <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                    </form>
+
+                    <!-- Reject button posts to RejectRequest action with confirmation -->
+                    <form asp-action="RejectRequest" asp-controller="MeterRequest" method="post" class="d-inline"
+                          onsubmit="return confirm('Are you sure you want to reject this request?');">
+                        <!-- Hidden input sending the request ID -->
+                        <input type="hidden" name="id" value="@request.Id" />
+                        <!-- Submit button styled as red 'Reject' -->
+                        <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

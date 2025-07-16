@@ -1,0 +1,58 @@
+﻿@model IEnumerable<WaterBillingApp.Models.MeterViewModel>
+
+<!-- Page heading -->
+<h2>Pending Meters</h2>
+
+<!-- Table to list all meters with pending status -->
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <!-- Column headers -->
+            <th>Serial Number</th>
+            <th>Installation Date</th>
+            <th>Customer</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Loop through each meter in the model -->
+        @foreach (var meter in Model)
+        {
+            <tr>
+                <!-- Display meter serial number -->
+                <td>@meter.SerialNumber</td>
+
+                <!-- Display installation date formatted as yyyy-MM-dd -->
+                <td>@meter.InstallationDate.ToString("yyyy-MM-dd")</td>
+
+                <!-- Display associated customer name -->
+                <td>@meter.CustomerName</td>
+
+                <!-- Action buttons for managing the pending meter -->
+                <td>
+                    <!-- Approve meter form -->
+                    <form asp-action="Approve" method="post" class="d-inline">
+                        <!-- Pass meter ID as hidden input -->
+                        <input type="hidden" name="id" value="@meter.Id" />
+                        <!-- Approve button styled as small green button -->
+                        <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                    </form>
+
+                    <!-- Reject meter form with confirmation prompt -->
+                    <form asp-action="Reject" method="post" class="d-inline"
+                          onsubmit="return confirm('Are you sure you want to reject this meter?');">
+                        <input type="hidden" name="id" value="@meter.Id" />
+                        <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                    </form>
+
+                    <!-- Delete meter form with confirmation prompt -->
+                    <form asp-action="DeleteConfirmed" method="post"
+                          onsubmit="return confirm('Are you sure you want to delete this meter?');">
+                        <input type="hidden" name="id" value="@meter.Id" />
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

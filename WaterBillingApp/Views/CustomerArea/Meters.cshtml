@@ -1,26 +1,33 @@
 ﻿@model IEnumerable<WaterBillingApp.Data.Entities.Meter>
 
 @{
+    // Set the page title for the browser tab and layout
     ViewData["Title"] = "My Meters";
 }
 
+<!-- Main heading for the page -->
 <h2>My Meters</h2>
 
+<!-- Show status message if set in TempData (e.g., after an action) -->
 @if (TempData["StatusMessage"] != null)
 {
     <div class="alert alert-info">@TempData["StatusMessage"]</div>
 }
 
+<!-- Button to allow the customer to request a new meter -->
 <a asp-action="RequestMeter" class="btn btn-primary mb-3">Request New Meter</a>
 
+<!-- Check if the user has any meters associated -->
 @if (!Model.Any())
 {
+    <!-- Inform user when no meters are linked to their account -->
     <div class="alert alert-info">
         You currently have no meters associated with your account.
     </div>
 }
 else
 {
+    <!-- Table listing all meters with relevant details -->
     <table class="table table-bordered table-hover">
         <thead>
             <tr>
@@ -31,20 +38,26 @@ else
                 <th>Last Reading</th>
                 <th>Last Reading Date</th>
                 <th>Actions</th>
-
             </tr>
         </thead>
         <tbody>
+            <!-- Loop through each meter in the model -->
             @foreach (var meter in Model)
             {
+                // Get the most recent consumption record for this meter, if any
                 var lastConsumption = meter.Consumptions
                 .OrderByDescending(c => c.Date)
                 .FirstOrDefault();
 
                 <tr>
+                    <!-- Meter serial number -->
                     <td>@meter.SerialNumber</td>
+
+                    <!-- Installation date formatted as dd/MM/yyyy -->
                     <td>@meter.InstallationDate.ToString("dd/MM/yyyy")</td>
+
                     <td>
+                        <!-- Show meter status with different styling -->
                         @if (meter.IsActive)
                         {
                             <span class="text-success">Active</span>
@@ -55,17 +68,23 @@ else
                         }
                     </td>
 
+                    <!-- Show last consumption volume or message if none -->
                     <td>
                         @(lastConsumption != null ? lastConsumption.Volume.ToString("N2") : "No consumption")
                     </td>
+
+                    <!-- Show last reading value or message if none -->
                     <td>
                         @(lastConsumption != null ? lastConsumption.Reading.ToString() : "No reading")
                     </td>
+
+                    <!-- Show date of last reading or a dash if none -->
                     <td>
                         @(lastConsumption != null ? lastConsumption.Date.ToString("dd/MM/yyyy") : "-")
                     </td>
 
                     <td>
+                        <!-- If meter is active, allow user to add a new reading -->
                         @if (meter.IsActive)
                         {
                             <a asp-controller="Consumption" asp-action="AddReading" asp-route-meterId="@meter.Id" class="btn btn-primary btn-sm">
@@ -75,11 +94,11 @@ else
                     </td>
                 </tr>
             }
-
         </tbody>
     </table>
 }
 
+<!-- Button to navigate back to the customer dashboard -->
 <a asp-controller="CustomerArea" asp-action="Index" class="btn btn-secondary mb-3">
     Back to Dashboard
 </a>

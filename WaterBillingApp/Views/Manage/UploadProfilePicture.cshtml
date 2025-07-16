@@ -1,18 +1,28 @@
 ﻿@{
+    // Set the page title to be used in layout and header
     ViewData["Title"] = "Upload Profile Picture";
 }
 
-<h2>@ViewData["Title"]</h2>
+<!-- Page heading displaying the title -->
+<h2 class="mb-4">@ViewData["Title"]</h2>
 
-<form asp-action="UploadProfilePicture" method="post" enctype="multipart/form-data">
-    <div class="form-group">
-        <label for="profilePicture">Choose a profile picture</label>
-        <input type="file" name="profilePicture" class="form-control" />
+<!-- Form for uploading a profile picture -->
+<form asp-action="UploadProfilePicture" method="post" enctype="multipart/form-data" class="mb-3">
+    <div class="mb-3">
+        <!-- Label for the file input -->
+        <label for="profilePicture" class="form-label">Choose a profile picture</label>
+        <!-- File input control, accepting only images -->
+        <input type="file" name="profilePicture" id="profilePicture" class="form-control" accept="image/*" />
     </div>
-    <button type="submit" class="btn btn-primary mt-2">Upload</button>
+
+    <!-- Submit button to upload the selected file -->
+    <button type="submit" class="btn btn-primary">Upload</button>
 </form>
 
+<!-- Display success message if set in TempData -->
 @if (TempData["StatusMessage"] != null)
 {
-    <div class="alert alert-success mt-3">@TempData["StatusMessage"]</div>
+    <div class="alert alert-success mt-3" role="alert">
+        @TempData["StatusMessage"]
+    </div>
 }

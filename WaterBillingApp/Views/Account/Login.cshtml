@@ -1,34 +1,60 @@
 ﻿@model WaterBillingApp.Models.LoginViewModel
+
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Login"; // Sets the page title for the layout
 }
 
-<h1>Login</h1>
-@if (TempData["ResetPasswordStatus"] != null)
-{
-    <div class="alert alert-success">@TempData["ResetPasswordStatus"]</div>
-}
+<!-- Main container that centers content vertically and horizontally -->
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="col-md-6 col-lg-5">
+        <!-- Card for visual structure and style -->
+        <div class="card shadow-lg">
+            <div class="card-body p-4">
+                <h2 class="text-center mb-4 text-primary">Login</h2>
 
-@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <!-- Display success message after password reset -->
+                @if (TempData["ResetPasswordStatus"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @TempData["ResetPasswordStatus"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
 
-<form asp-action="Login" method="post">
-    <div>
-        <label>Email</label>
-        <input asp-for="Email" />
-        <span asp-validation-for="Email" class="text-danger"></span>
+                <!-- Show validation summary (e.g., invalid login) -->
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <!-- Login form -->
+                <form asp-action="Login" method="post">
+                    <!-- Email field -->
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">Email</label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <!-- Password field -->
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label">Password</label>
+                        <input asp-for="Password" type="password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <!-- Remember me checkbox -->
+                    <div class="form-check mb-3">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label class="form-check-label" asp-for="RememberMe">Remember me</label>
+                    </div>
+
+                    <!-- Link to reset password -->
+                    <div class="mb-3 text-end">
+                        <a asp-action="ForgotPassword" asp-controller="Account" class="text-decoration-none">Forgot your password?</a>
+                    </div>
+
+                    <!-- Submit button -->
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                </form>
+            </div>
+        </div>
     </div>
-    <div>
-        <label>Password</label>
-        <input asp-for="Password" type="password" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <div>
-        <input asp-for="RememberMe" type="checkbox" />
-        <label>Remember me</label>
-        <br />
-        <p>
-            <a asp-action="ForgotPassword" asp-controller="Account">Forgot your password?</a>
-        </p>
-    </div>
-    <button type="submit">Login</button>
-</form>
+</div>

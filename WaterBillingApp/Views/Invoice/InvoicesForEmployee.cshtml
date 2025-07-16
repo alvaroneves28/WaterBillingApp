@@ -1,14 +1,18 @@
 ﻿@model IEnumerable<WaterBillingApp.Data.Entities.Invoice>
 
 @{
+    // Set the page title for the ViewData dictionary (used in layout or for SEO)
     ViewData["Title"] = "All Invoices";
 }
 
+<!-- Main heading for the page -->
 <h1>All Invoices</h1>
 
+<!-- Table to list all invoices -->
 <table class="table table-striped">
     <thead>
         <tr>
+            <!-- Table headers -->
             <th>Invoice ID</th>
             <th>Issue Date</th>
             <th>Status</th>
@@ -17,14 +21,17 @@
         </tr>
     </thead>
     <tbody>
+        <!-- Loop through each invoice in the model collection -->
         @foreach (var invoice in Model)
         {
             <tr>
+                <!-- Display invoice properties -->
                 <td>@invoice.Id</td>
                 <td>@invoice.IssueDate.ToString("dd/MM/yyyy")</td>
                 <td>@invoice.Status</td>
                 <td>@invoice.TotalAmount.ToString("C")</td>
                 <td>
+                    <!-- Link to view detailed information about the invoice -->
                     <a asp-action="DetailsForEmployee" asp-route-id="@invoice.Id" class="btn btn-primary btn-sm">Details</a>
                 </td>
             </tr>
@@ -32,4 +39,5 @@
     </tbody>
 </table>
 
+<!-- Button to navigate back to the employee dashboard -->
 <a asp-action="Index" asp-controller="Employee" class="btn btn-secondary mt-3">Back to Dashboard</a>

@@ -1,35 +1,68 @@
 ﻿@model IEnumerable<WaterBillingApp.Data.Entities.TariffBracket>
 
 @{
+    // Set the page title to "Manage Tariffs"
     ViewData["Title"] = "Manage Tariffs";
 }
 
-<h1>Tariff Management</h1>
+<h1>@ViewData["Title"]</h1>
 
-<a asp-action="Create" class="btn btn-success">Add New Tariff</a>
+<div class="mb-3">
+    @* Button to navigate to the Create Tariff page *@
+    <a asp-action="Create" class="btn btn-success">
+        @* Bootstrap icon for plus and some margin *@
+        <i class="bi bi-plus-lg me-1"></i> Add New Tariff
+    </a>
+</div>
 
-<table class="table">
-    <thead>
+<table class="table table-striped table-hover align-middle">
+    <thead class="table-primary">
         <tr>
-            <th>Minimum Volume</th>
-            <th>Maximum Volume</th>
-            <th>Price per m³</th>
-            <th>Actions</th>
+            <th>Minimum Volume (m³)</th>
+            <th>Maximum Volume (m³)</th>
+            <th>Price per m³ (€)</th>
+            <th style="width: 140px;">Actions</th> @* Fixed width for action buttons column *@
         </tr>
     </thead>
     <tbody>
+        @* Loop through each tariff in the model collection *@
         @foreach (var tariff in Model)
         {
-            <tr>
-                <td>@tariff.MinVolume</td>
-                <td>@(tariff.MaxVolume.HasValue? tariff.MaxVolume.Value.ToString() : "No limit")</td>
-                <td>@tariff.PricePerCubicMeter €</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@tariff.Id" class="btn btn-warning">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@tariff.Id" class="btn btn-danger"
-                       onclick="return confirm('Are you sure you want to delete this tariff?');">Delete</a>
-                </td>
-            </tr>
-        }
+        <tr>
+            @* Show the minimum volume value *@
+            <td>@tariff.MinVolume</td>
+
+            @* 
+                   Show the maximum volume if it has a value,
+                   otherwise display "No limit" in italics.
+                   Use raw HTML string so <em> renders properly.
+                *@
+            <td>
+                @Html.Raw(tariff.MaxVolume.HasValue
+                                ? tariff.MaxVolume.Value.ToString()
+                                : "<em>No limit</em>")
+            </td>
+
+            @* Format price as currency with 2 decimal places *@
+            <td>@string.Format("{0:C2}", tariff.PricePerCubicMeter)</td>
+
+            <td>
+                @* Edit button linking to the Edit action with tariff ID *@
+                <a asp-action="Edit" asp-route-id="@tariff.Id"
+                   class="btn btn-sm btn-warning me-1" title="Edit tariff">
+                    <i class="bi bi-pencil-square"></i>
+                </a>
+
+                @* Delete button linking to the Delete action with tariff ID
+                       Includes JavaScript confirmation prompt to prevent accidental deletes *@
+                <a asp-action="Delete" asp-route-id="@tariff.Id"
+                   class="btn btn-sm btn-danger"
+                   onclick="return confirm('Are you sure you want to delete this tariff?');"
+                   title="Delete tariff">
+                    <i class="bi bi-trash"></i>
+                </a>
+            </td>
+        </tr>
+                }
     </tbody>
 </table>

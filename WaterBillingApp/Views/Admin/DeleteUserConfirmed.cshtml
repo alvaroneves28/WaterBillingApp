@@ -1,11 +1,17 @@
 ﻿@{
+    // Set the page title used in the layout and header
     ViewData["Title"] = "User Deleted";
 }
 
-<h2>@ViewData["Title"]</h2>
+<!-- Page header displaying the title -->
+<h2 class="mb-4">@ViewData["Title"]</h2>
 
+<!-- Success alert to inform the user that the deletion was successful -->
 <div class="alert alert-success" role="alert">
-    O utilizador foi eliminado com sucesso.
+    The user has been successfully deleted.
 </div>
 
-<a asp-action="ManageUsers" asp-controller="Admin" class="btn btn-primary">Voltar à lista de utilizadores</a>
+<!-- Button to navigate back to the user management list -->
+<a asp-action="ManageUsers" asp-controller="Admin" class="btn btn-primary mt-3">
+    Back to User List
+</a>

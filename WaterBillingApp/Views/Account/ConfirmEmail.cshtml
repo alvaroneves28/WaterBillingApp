@@ -1,10 +1,19 @@
 ﻿@{
-    ViewData["Title"] = "Confirmação de Email";
+    // Set the page title shown in the browser tab and heading
+    ViewData["Title"] = "Email Confirmation";
 }
 
-<h2>@ViewData["Title"]</h2>
+<!-- Page heading -->
+<h2 class="mb-4">@ViewData["Title"]</h2>
 
+<!-- Success message box -->
 <div class="alert alert-success" role="alert">
-    O seu email foi confirmado com sucesso!
-    Agora pode <a href="@Url.Action("ResetPassword", "Account", new { email = ViewBag.Email })">definir a sua password</a>.
+    <!-- Inform user that email was confirmed -->
+    Your email has been successfully confirmed!
+
+    <!-- Link to set a new password, passing the confirmed email via route data -->
+    You can now
+    <a href="@Url.Action("ResetPassword", "Account", new { email = ViewBag.Email })" class="btn btn-success btn-sm ms-2">
+        set your password
+    </a>.
 </div>

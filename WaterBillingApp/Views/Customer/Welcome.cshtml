@@ -1,11 +1,24 @@
 ﻿@{
+    // Set the page title shown in the layout and browser tab
     ViewData["Title"] = "Welcome";
 }
 
-<h2>@ViewData["Title"]</h2>
+<!-- Page heading displaying the title -->
+<h2 class="mb-4">@ViewData["Title"]</h2>
 
-<p>@ViewBag.Message</p>
+<!-- Optional informational message passed from the controller -->
+@if (!string.IsNullOrEmpty(ViewBag.Message))
+{
+    <div class="alert alert-info" role="alert">
+        @ViewBag.Message
+    </div>
+}
 
-<p>Your account has been confirmed and your password has been set. You can now log in.</p>
+<!-- Confirmation message for the user -->
+<p>Your account has been successfully confirmed and your password has been set.</p>
+<p>You can now log in to access your account.</p>
 
-<a class="btn btn-primary" asp-controller="Home" asp-action="Index">Go to Homepage</a>
+<!-- Button to navigate back to the homepage -->
+<a class="btn btn-primary mt-3" asp-controller="Home" asp-action="Index">
+    Go to Homepage
+</a>

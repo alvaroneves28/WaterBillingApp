@@ -4,58 +4,82 @@
     ViewData["Title"] = "Invoice Details";
 }
 
-<h1>Invoice Details</h1>
+<div class="container mt-4">
+    <!-- Page header -->
+    <h2 class="mb-4">Invoice Details</h2>
 
-<div class="card">
-    <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-4">Invoice ID</dt>
-            <dd class="col-sm-8">@Model.Id</dd>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <!-- General invoice information section -->
+            <h5 class="card-title text-primary">General Information</h5>
+            <dl class="row">
+                <!-- Invoice ID -->
+                <dt class="col-sm-4">Invoice ID</dt>
+                <dd class="col-sm-8">@Model.Id</dd>
 
-            <dt class="col-sm-4">Issue Date</dt>
-            <dd class="col-sm-8">@Model.IssueDate.ToString("dd/MM/yyyy")</dd>
+                <!-- Invoice issue date -->
+                <dt class="col-sm-4">Issue Date</dt>
+                <dd class="col-sm-8">@Model.IssueDate.ToString("dd/MM/yyyy")</dd>
 
-            <dt class="col-sm-4">Status</dt>
-            <dd class="col-sm-8">@Model.Status</dd>
+                <!-- Invoice status -->
+                <dt class="col-sm-4">Status</dt>
+                <dd class="col-sm-8">@Model.Status</dd>
 
-            <dt class="col-sm-4">Total Amount</dt>
-            <dd class="col-sm-8">@Model.TotalAmount.ToString("C")</dd>
-        </dl>
+                <!-- Total amount due, formatted as currency -->
+                <dt class="col-sm-4">Total Amount</dt>
+                <dd class="col-sm-8">@Model.TotalAmount.ToString("C")</dd>
+            </dl>
 
-        <h5 class="mt-4">Consumption Info</h5>
-        <dl class="row">
-            <dt class="col-sm-4">Reading Date</dt>
-            <dd class="col-sm-8">@Model.Consumption?.Date.ToString("dd/MM/yyyy")</dd>
+            <hr class="my-4" />
 
-            <dt class="col-sm-4">Volume Consumed</dt>
-            <dd class="col-sm-8">@Model.Consumption?.Volume m³</dd>
+            <!-- Consumption details section -->
+            <h5 class="card-title text-primary">Consumption Info</h5>
+            <dl class="row">
+                <!-- Date of the consumption reading -->
+                <dt class="col-sm-4">Reading Date</dt>
+                <dd class="col-sm-8">@Model.Consumption?.Date.ToString("dd/MM/yyyy")</dd>
 
-            <dt class="col-sm-4">Applied Tariff</dt>
-            <dd class="col-sm-8">
-                @if (Model.Consumption?.TariffBracket != null)
-                {
-                    <span>
-                        €@Model.Consumption.TariffBracket.PricePerCubicMeter /m³
-                        (from @Model.Consumption.TariffBracket.MinVolume
-                        to @(Model.Consumption.TariffBracket.MaxVolume?.ToString() ?? "no limit") m³)
-                    </span>
-                }
-                else
-                {
-                    <span class="text-danger">No tariff applied</span>
-                }
-            </dd>
-        </dl>
+                <!-- Volume of water consumed, with unit -->
+                <dt class="col-sm-4">Volume Consumed</dt>
+                <dd class="col-sm-8">@Model.Consumption?.Volume m³</dd>
 
-        <h5 class="mt-4">Meter Info</h5>
-        <dl class="row">
-            <dt class="col-sm-4">Serial Number</dt>
-            <dd class="col-sm-8">@Model.Consumption?.Meter?.SerialNumber</dd>
+                <!-- Tariff applied to consumption -->
+                <dt class="col-sm-4">Applied Tariff</dt>
+                <dd class="col-sm-8">
+                    @if (Model.Consumption?.TariffBracket != null)
+                    {
+                        <span>
+                            €@Model.Consumption.TariffBracket.PricePerCubicMeter /m³
+                            (from @Model.Consumption.TariffBracket.MinVolume
+                            to @(Model.Consumption.TariffBracket.MaxVolume?.ToString() ?? "no limit") m³)
+                        </span>
+                    }
+                    else
+                    {
+                        <!-- Display warning if no tariff is applied -->
+                        <span class="text-danger">No tariff applied</span>
+                    }
+                </dd>
+            </dl>
 
-            <dt class="col-sm-4">Customer</dt>
-            <dd class="col-sm-8">@Model.Consumption?.Meter?.Customer?.FullName</dd>
-        </dl>
+            <hr class="my-4" />
+
+            <!-- Meter and customer information section -->
+            <h5 class="card-title text-primary">Meter Info</h5>
+            <dl class="row">
+                <!-- Meter serial number -->
+                <dt class="col-sm-4">Serial Number</dt>
+                <dd class="col-sm-8">@Model.Consumption?.Meter?.SerialNumber</dd>
+
+                <!-- Customer's full name associated with the meter -->
+                <dt class="col-sm-4">Customer</dt>
+                <dd class="col-sm-8">@Model.Consumption?.Meter?.Customer?.FullName</dd>
+            </dl>
+        </div>
     </div>
-</div>
 
-<a asp-action="Invoices" asp-controller="CustomerArea" class="btn btn-secondary mt-3">Back to Invoices</a>
+    <!-- Button to navigate back to the list of invoices -->
+    <a asp-action="Invoices" asp-controller="CustomerArea" class="btn btn-outline-secondary mt-4">
+        <i class="bi bi-arrow-left"></i> Back to Invoices
+    </a>
+</div>

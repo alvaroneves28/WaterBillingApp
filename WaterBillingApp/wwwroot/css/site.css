@@ -21,4 +21,11 @@ body {
   margin-bottom: 60px;
 }
 
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.75rem;
+}
+
+
+
 

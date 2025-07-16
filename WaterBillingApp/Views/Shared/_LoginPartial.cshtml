@@ -1,37 +1,44 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using WaterBillingApp.Data.Entities
+
+@* Inject SignInManager and UserManager services to manage user authentication and information *@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
+@{
+    // Retrieve the current logged-in user asynchronously
+    var currentUser = await UserManager.GetUserAsync(User);
+    // Use FullName if available; otherwise fallback to the username/identity name
+    var displayName = currentUser?.FullName ?? User.Identity?.Name;
+}
+
 <ul class="navbar-nav">
+    @* Check if the user is signed in *@
     @if (SignInManager.IsSignedIn(User))
     {
         <li class="nav-item dropdown">
+            @* Dropdown toggle showing greeting with the user's display name *@
             <a class="nav-link dropdown-toggle text-dark" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Hello, @User.Identity?.Name
+                Hello, @displayName
             </a>
-            <ul class="dropdown-menu" aria-labelledby="userDropdown">
+
+            @* Dropdown menu with user-related actions *@
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                 <li>
-                    <a class="dropdown-item" asp-controller="Manage" asp-action="ChangePassword">Change Password</a>
+                    @* Link to change password page *@
+                    <a class="dropdown-item text-primary" asp-controller="Manage" asp-action="ChangePassword">Change Password</a>
                 </li>
                 <li>
-                    <a class="dropdown-item" asp-controller="Manage" asp-action="UploadProfilePicture">Change Profile Picture</a>
+                    @* Link to upload/change profile picture page *@
+                    <a class="dropdown-item text-primary" asp-controller="Manage" asp-action="UploadProfilePicture">Change Profile Picture</a>
                 </li>
                 <li>
+                    @* Logout form: uses POST method for security (prevents CSRF) *@
                     <form asp-controller="Account" asp-action="Logout" method="post" class="dropdown-item p-0 m-0">
-                        <button type="submit" class="btn btn-link dropdown-item">Logout</button>
+                        <button type="submit" class="btn btn-link dropdown-item text-primary">Logout</button>
                     </form>
                 </li>
             </ul>
-        </li>
-    }
-    else
-    {
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Register</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
         </li>
     }
 </ul>

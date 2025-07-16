@@ -1,16 +1,20 @@
 ﻿@model IEnumerable<WaterBillingApp.Data.Entities.Invoice>
 
 @{
+    // Set the page title
     ViewData["Title"] = "Invoices";
 }
 
+<!-- Page heading -->
 <h1>@ViewData["Title"]</h1>
 
+<!-- Display success message from TempData if available -->
 @if (TempData["StatusMessage"] != null)
 {
     <div class="alert alert-success">@TempData["StatusMessage"]</div>
 }
 
+<!-- Table showing list of invoices -->
 <table class="table table-striped">
     <thead>
         <tr>
@@ -25,16 +29,32 @@
         </tr>
     </thead>
     <tbody>
+        <!-- Loop through each invoice in the model -->
         @foreach (var invoice in Model)
         {
             <tr>
+                <!-- Display invoice ID -->
                 <td>@invoice.Id</td>
+
+                <!-- Format issue date as dd/MM/yyyy -->
                 <td>@invoice.IssueDate.ToString("dd/MM/yyyy")</td>
+
+                <!-- Consumption ID linked to this invoice -->
                 <td>@invoice.ConsumptionId</td>
+
+                <!-- Meter serial number, if available -->
                 <td>@invoice.Consumption?.Meter?.SerialNumber</td>
+
+                <!-- Customer full name or "N/A" if missing -->
                 <td>@(invoice.Consumption?.Meter?.Customer?.FullName ?? "N/A")</td>
+
+                <!-- Total amount formatted with 2 decimals -->
                 <td>@invoice.TotalAmount.ToString("N2")</td>
+
+                <!-- Invoice status as string -->
                 <td>@invoice.Status.ToString()</td>
+
+                <!-- Link to invoice details page for employees -->
                 <td>
                     <a asp-action="DetailsForEmployee" asp-route-id="@invoice.Id" class="btn btn-primary btn-sm">Details</a>
                 </td>

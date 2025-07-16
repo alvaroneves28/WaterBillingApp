@@ -1,52 +1,75 @@
 ﻿@model WaterBillingApp.Models.MeterRequestViewModel
 
-<h2>Request a Meter</h2>
-@if (TempData["StatusMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["StatusMessage"]
-    </div>
-}
 @{
+    // Set the page title for layout and header
     ViewData["Title"] = "Request a Meter";
 }
 
-<form asp-action="CreateRequest" method="post">
-    @Html.AntiForgeryToken()
-    <div class="form-group">
-        <label asp-for="Name"></label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
-    </div>
+<!-- Center the form vertically and horizontally on the viewport -->
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg">
+            <div class="card-body p-4">
+                <!-- Form heading -->
+                <h2 class="text-center text-primary mb-4">Request a Meter</h2>
 
-    <div class="form-group">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
+                <!-- Show success message if set in TempData -->
+                @if (TempData["StatusMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @TempData["StatusMessage"]
+                        <!-- Button to close the alert -->
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
 
-    <div class="form-group">
-        <label asp-for="NIF"></label>
-        <input asp-for="NIF" class="form-control" />
-        <span asp-validation-for="NIF" class="text-danger"></span>
-    </div>
+                <!-- Form to create a new meter request -->
+                <form asp-action="CreateRequest" method="post">
+                    @Html.AntiForgeryToken() <!-- Protect against CSRF -->
+                    <!-- Name input field with validation -->
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
 
-    <div class="form-group">
-        <label asp-for="Address"></label>
-        <input asp-for="Address" class="form-control" />
-        <span asp-validation-for="Address" class="text-danger"></span>
-    </div>
+                    <!-- Email input field with validation -->
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
 
-    <div class="form-group">
-        <label asp-for="Phone"></label>
-        <input asp-for="Phone" class="form-control" />
-        <span asp-validation-for="Phone" class="text-danger"></span>
-    </div>
+                    <!-- NIF (tax number) input field with validation -->
+                    <div class="mb-3">
+                        <label asp-for="NIF" class="form-label"></label>
+                        <input asp-for="NIF" class="form-control" />
+                        <span asp-validation-for="NIF" class="text-danger"></span>
+                    </div>
 
-    <button type="submit" class="btn btn-primary">Submit Request</button>
-</form>
+                    <!-- Address input field with validation -->
+                    <div class="mb-3">
+                        <label asp-for="Address" class="form-label"></label>
+                        <input asp-for="Address" class="form-control" />
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+
+                    <!-- Phone input field with validation -->
+                    <div class="mb-4">
+                        <label asp-for="Phone" class="form-label"></label>
+                        <input asp-for="Phone" class="form-control" />
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                    </div>
+
+                    <!-- Submit button spanning full width -->
+                    <button type="submit" class="btn btn-primary w-100">Submit Request</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <!-- Load client-side validation scripts -->
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }

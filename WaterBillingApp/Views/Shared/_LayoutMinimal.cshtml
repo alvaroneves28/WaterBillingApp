@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <!-- Ensure proper scaling on different devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Dynamic page title -->
+    <title>@ViewData["Title"] - WaterBillingApp</title>
+
+    <!-- Bootstrap CSS for styling -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- Custom site-wide styles with cache busting -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="bg-light">
+    <!-- Main content container with vertical padding -->
+    <main role="main" class="container py-4">
+        <!-- Render the content of child views here -->
+        @RenderBody()
+    </main>
+
+    <!-- jQuery library for JavaScript functionality -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap JavaScript bundle (includes Popper.js) -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Optional section for page-specific scripts -->
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -1,37 +1,62 @@
 ﻿@model List<UserWithRolesViewModel>
 
 @{
+    // Set the page title displayed in the layout and header
     ViewData["Title"] = "Manage Users";
 }
 
+<!-- Main heading of the page -->
 <h1>@ViewData["Title"]</h1>
 
-<table class="table table-striped">
-    <thead>
+<!-- Users table with striped rows, hover effect, and vertically centered cells -->
+<table class="table table-striped table-hover align-middle">
+    <thead class="table-dark">
         <tr>
+            <!-- Column headers -->
             <th>Email</th>
             <th>UserName</th>
             <th>Email Confirmed</th>
             <th>Roles</th>
-            <th>Ações</th>
+            <th style="width: 140px;">Actions</th>
         </tr>
     </thead>
     <tbody>
+        <!-- Loop through each user with roles -->
         @foreach (var item in Model)
         {
             <tr>
+                <!-- Display user email -->
                 <td>@item.User.Email</td>
+                <!-- Display username -->
                 <td>@item.User.UserName</td>
-                <td>@(item.User.EmailConfirmed ? "Yes" : "No")</td>
                 <td>
-                    @foreach (var role in item.Roles)
+                    <!-- Show badge indicating if email is confirmed -->
+                    @if (item.User.EmailConfirmed)
                     {
-                        <span class="badge bg-secondary">@role</span>
+                        <span class="badge bg-success">Yes</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">No</span>
                     }
                 </td>
                 <td>
-                    <a asp-action="EditUser" asp-route-id="@item.User.Id" class="btn btn-sm btn-warning">Edit</a>
-                    <a asp-action="DeleteUser" asp-route-id="@item.User.Id" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
+                    <!-- Display all roles of the user as badges -->
+                    @foreach (var role in item.Roles)
+                    {
+                        <span class="badge bg-info text-dark me-1">@role</span>
+                    }
+                </td>
+                <td>
+                    <!-- Edit user button with icon and tooltip -->
+                    <a asp-action="EditUser" asp-route-id="@item.User.Id" class="btn btn-sm btn-warning me-1" title="Edit user">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                    <!-- Delete user button with confirmation popup and icon -->
+                    <a asp-action="DeleteUser" asp-route-id="@item.User.Id" class="btn btn-sm btn-danger"
+                       onclick="return confirm('Are you sure you want to delete this user?');" title="Delete user">
+                        <i class="bi bi-trash"></i>
+                    </a>
                 </td>
             </tr>
         }

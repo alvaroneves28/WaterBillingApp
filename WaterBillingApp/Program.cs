@@ -8,15 +8,26 @@ using WaterBillingApp.Repositories;
 
 namespace WaterBillingApp
 {
+    /// <summary>
+    /// Main program class responsible for configuring and running the web application.
+    /// </summary>
     public class Program
     {
+        /// <summary>
+        /// Creates predefined roles and an admin user if they do not exist.
+        /// </summary>
+        /// <param name="serviceProvider">Service provider to resolve dependencies.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        /// <exception cref="Exception">Thrown if admin user creation fails.</exception>
         public static async Task CreateRoles(IServiceProvider serviceProvider)
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
+            // Define the roles to be created
             string[] roleNames = { "Admin", "Customer", "Employee", "Guest" };
 
+            // Ensure each role exists in the system
             foreach (var roleName in roleNames)
             {
                 var roleExists = await roleManager.RoleExistsAsync(roleName);
@@ -26,9 +37,11 @@ namespace WaterBillingApp
                 }
             }
 
+            // Define default admin user credentials
             string adminEmail = "admin@exemplo.com";
             string adminPassword = "Password123!";
 
+            // Check if the admin user exists; if not, create it
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
             if (adminUser == null)
             {
@@ -52,13 +65,16 @@ namespace WaterBillingApp
             }
         }
 
+        /// <summary>
+        /// Application entry point. Configures services, middleware, and starts the web host.
+        /// </summary>
+        /// <param name="args">Command-line arguments.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public static async Task Main(string[] args)
         {
-
-
             var builder = WebApplication.CreateBuilder(args);
 
-            // Injeção de dependencias
+            // Dependency Injection registrations
             builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
             builder.Services.AddScoped<IMeterRepository, MeterRepository>();
             builder.Services.AddScoped<IConsumptionRepository, ConsumptionRepository>();
@@ -67,19 +83,20 @@ namespace WaterBillingApp
             builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
             builder.Services.AddScoped<IMeterRequestRepository, MeterRequestRepository>();
 
-
+            // Configure application cookie paths for access denied and login
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.AccessDeniedPath = "/Account/AccessDenied";
                 options.LoginPath = "/Account/Login";
             });
 
+            // Load user secrets during development
             if (builder.Environment.IsDevelopment())
             {
                 builder.Configuration.AddUserSecrets<Program>();
             }
 
-            // Configuração da base de dados
+            // Configure database context with connection string and retry policy
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -87,7 +104,7 @@ namespace WaterBillingApp
                     sqlOptions.EnableRetryOnFailure()));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            // Usar o ApplicationUser personalizado e ativar roles
+            // Setup Identity with custom ApplicationUser and roles
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
@@ -103,10 +120,10 @@ namespace WaterBillingApp
 
             builder.Services.AddControllersWithViews();
 
-            // Configurações SMTP a partir do appsettings.json
+            // Configure SMTP settings from configuration file (appsettings.json)
             builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
 
-            // Registar EmailSender usando as configurações injetadas
+            // Register EmailSender service with injected SMTP settings
             builder.Services.AddTransient<IEmailSender>(serviceProvider =>
             {
                 var smtpSettings = serviceProvider.GetRequiredService<IOptions<SmtpSettings>>().Value;
@@ -115,15 +132,14 @@ namespace WaterBillingApp
 
             var app = builder.Build();
 
-            // Criar roles e admin ao iniciar
+            // Create roles and admin user on application startup
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
                 await CreateRoles(services);
             }
 
-
-            // Pipeline HTTP
+            // HTTP request pipeline configuration based on environment
             if (app.Environment.IsDevelopment())
             {
                 app.UseMigrationsEndPoint();
@@ -144,12 +160,12 @@ namespace WaterBillingApp
             app.UseAuthentication();
             app.UseAuthorization();
 
+            // Configure the default route for MVC controllers
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
-
-
+            // Run the application
             await app.RunAsync();
         }
     }

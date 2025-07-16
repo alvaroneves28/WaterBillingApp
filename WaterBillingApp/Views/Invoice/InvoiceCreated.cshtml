@@ -1,7 +1,19 @@
-﻿@if (Context.Request.Query.ContainsKey("createdInvoiceId"))
+﻿@{
+    // Retrieve the 'createdInvoiceId' parameter from the query string, if present
+    var createdInvoiceId = Context.Request.Query["createdInvoiceId"].ToString();
+}
+
+@if (!string.IsNullOrEmpty(createdInvoiceId))
 {
-    <div class="alert alert-success">
-        Invoice created successfully.
-        <a asp-action="Details" asp-route-id="@Context.Request.Query["createdInvoiceId"]">View invoice</a>
+    // Display a dismissible success alert if an invoice ID was provided in the query string
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <!-- Strong emphasis on the success message -->
+        <strong>Success!</strong> Invoice created successfully.
+
+        <!-- Link to view the newly created invoice details -->
+        <a asp-action="Details" asp-route-id="@createdInvoiceId" class="alert-link">View invoice</a>
+
+        <!-- Close button to dismiss the alert -->
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }

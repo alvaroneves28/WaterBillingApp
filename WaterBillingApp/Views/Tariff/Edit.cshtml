@@ -1,28 +1,43 @@
 ﻿@model WaterBillingApp.Data.Entities.TariffBracket
 
 @{
+    // Set the page title to "Edit Tariff"
     ViewData["Title"] = "Edit Tariff";
 }
 
 <h1>Edit Tariff</h1>
 
 <form asp-action="Edit" method="post">
+    @* Hidden field to hold the tariff Id so the server knows which tariff to update *@
     <input type="hidden" asp-for="Id" />
+
     <div class="form-group">
+        @* Label and input for the minimum volume of the tariff bracket *@
         <label asp-for="MinVolume" class="form-label"></label>
         <input asp-for="MinVolume" class="form-control" />
+        @* Validation message placeholder for MinVolume *@
         <span asp-validation-for="MinVolume" class="text-danger"></span>
     </div>
+
     <div class="form-group">
+        @* Label and input for the maximum volume of the tariff bracket *@
         <label asp-for="MaxVolume" class="form-label"></label>
         <input asp-for="MaxVolume" class="form-control" />
+        @* Validation message placeholder for MaxVolume *@
         <span asp-validation-for="MaxVolume" class="text-danger"></span>
     </div>
+
     <div class="form-group">
+        @* Label and input for the price per cubic meter in this tariff bracket *@
         <label asp-for="PricePerCubicMeter" class="form-label"></label>
         <input asp-for="PricePerCubicMeter" class="form-control" />
+        @* Validation message placeholder for PricePerCubicMeter *@
         <span asp-validation-for="PricePerCubicMeter" class="text-danger"></span>
     </div>
+
+    @* Submit button to save changes with a warning style to indicate an update *@
     <button type="submit" class="btn btn-warning mt-3">Save</button>
+
+    @* Cancel button to return to the tariff management list without saving changes *@
     <a asp-action="ManageTariffs" class="btn btn-secondary mt-3">Cancel</a>
 </form>

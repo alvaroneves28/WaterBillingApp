@@ -1,27 +1,40 @@
 ﻿@model WaterBillingApp.Data.Entities.TariffBracket
 
 @{
+    // Set the page title used in layout and browser tab
     ViewData["Title"] = "Create Tariff";
 }
 
 <h1>Create Tariff</h1>
 
 <form asp-action="Create" method="post">
+    @* Input for the minimum volume of this tariff bracket *@
     <div class="form-group">
         <label asp-for="MinVolume" class="form-label"></label>
         <input asp-for="MinVolume" class="form-control" />
+        @* Validation message placeholder for MinVolume *@
         <span asp-validation-for="MinVolume" class="text-danger"></span>
     </div>
+
+    @* Input for the maximum volume of this tariff bracket *@
     <div class="form-group">
         <label asp-for="MaxVolume" class="form-label"></label>
         <input asp-for="MaxVolume" class="form-control" />
+        @* Validation message placeholder for MaxVolume *@
         <span asp-validation-for="MaxVolume" class="text-danger"></span>
     </div>
+
+    @* Input for the price charged per cubic meter within this bracket *@
     <div class="form-group">
         <label asp-for="PricePerCubicMeter" class="form-label"></label>
         <input asp-for="PricePerCubicMeter" class="form-control" />
+        @* Validation message placeholder for PricePerCubicMeter *@
         <span asp-validation-for="PricePerCubicMeter" class="text-danger"></span>
     </div>
+
+    @* Submit button to post the form and create the tariff bracket *@
     <button type="submit" class="btn btn-primary mt-3">Create</button>
+
+    @* Cancel button to return to the ManageTariffs view without saving changes *@
     <a asp-action="ManageTariffs" asp-controller="Tariff" class="btn btn-secondary mt-3">Cancel</a>
 </form>

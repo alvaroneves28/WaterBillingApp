@@ -1,27 +1,35 @@
 ﻿@model AddReadingViewModel
 
+<!-- Page heading -->
 <h2>Add Reading</h2>
 
+<!-- Form to submit a new meter reading -->
 <form asp-action="AddReading" method="post">
+    <!-- Hidden field for the Meter ID (not editable) -->
     <input type="hidden" asp-for="MeterId" />
-    <input type="hidden" asp-for="Date" /> 
+    <!-- Hidden field for the date of the reading (not editable) -->
+    <input type="hidden" asp-for="Date" />
 
+    <!-- Input group for the reading value -->
     <div class="form-group">
-        <label asp-for="Reading"></label>
-        <input asp-for="Reading" class="form-control" />
-        <span asp-validation-for="Reading" class="text-danger"></span>
+        <label asp-for="Reading"></label> <!-- Label for Reading -->
+        <input asp-for="Reading" class="form-control" /> <!-- Input for Reading -->
+        <span asp-validation-for="Reading" class="text-danger"></span> <!-- Validation message -->
     </div>
 
+    <!-- Display the reading date in a disabled input (read-only) -->
     <div class="form-group">
         <label>Reading Date</label>
         <input class="form-control" value="@Model.Date.ToString("dd/MM/yyyy")" disabled />
     </div>
 
+    <!-- Submit button to post the form -->
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
 @section Scripts {
     @{
+        // Include client-side validation scripts
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }

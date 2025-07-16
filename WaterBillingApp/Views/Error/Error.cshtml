@@ -1,20 +1,27 @@
 ﻿@{
+    // Set the page title
     ViewData["Title"] = "Error";
 }
 
+<!-- Main error heading with a red text color -->
 <h1 class="text-danger">An unexpected error occurred.</h1>
 
+<!-- User-friendly message explaining something went wrong -->
 <p>
     Sorry, something went wrong while processing your request.
 </p>
 
+<!-- Check if detailed exception information is available -->
 @if (ViewData["ExceptionMessage"] != null)
 {
+    <!-- Display detailed error information inside a Bootstrap danger alert -->
     <div class="alert alert-danger">
         <strong>Exception Message:</strong> @ViewData["ExceptionMessage"] <br />
         <strong>Path:</strong> @ViewData["ExceptionPath"] <br />
+        <!-- Stack trace formatted inside a preformatted block for readability -->
         <pre>@ViewData["StackTrace"]</pre>
     </div>
 }
 
+<!-- Button to navigate back to the home page -->
 <a asp-controller="Home" asp-action="Index" class="btn btn-primary mt-3">Go back to Home</a>

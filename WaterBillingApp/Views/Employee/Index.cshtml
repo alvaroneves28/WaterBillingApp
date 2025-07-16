@@ -1,162 +1,54 @@
 ﻿@model WaterBillingApp.Models.MetersDashboardViewModel
 
-<a asp-controller="Invoice" asp-action="Index" class="btn btn-info mb-3">
-    View Invoices
-</a>
-
 @{
+    // Set the page title
     ViewData["Title"] = "Manage Meters";
 }
 
-<h1>@ViewData["Title"]</h1>
-<h2>New Meter Requests</h2>
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>NIF</th>
-            <th>Address</th>
-            <th>Phone</th>
-            <th>Request Date</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var request in Model.PendingMeterRequests)
-        {
-            <tr>
-                <td>@request.Name</td>
-                <td>@request.Email</td>
-                <td>@request.NIF</td>
-                <td>@request.Address</td>
-                <td>@request.Phone</td>
-                <td>@request.RequestDate.ToString("dd/MM/yyyy")</td>
-                <td>@request.Status</td>
-                <td>
-                    <form asp-action="ApproveRequest" asp-controller="MeterRequest" method="post" class="d-inline">
-                        <input type="hidden" name="id" value="@request.Id" />
-                        <button type="submit" class="btn btn-success btn-sm">Approve</button>
-                    </form>
-                    <form asp-action="RejectRequest" asp-controller="MeterRequest" method="post" class="d-inline" onsubmit="return confirm('Are you sure to reject?');">
-                        <input type="hidden" name="id" value="@request.Id" />
-                        <button type="submit" class="btn btn-danger btn-sm">Reject</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<!-- Button to navigate to the invoices page -->
+<a asp-controller="Invoice" asp-action="Index" class="btn btn-info mb-3">View Invoices</a>
 
+<!-- Main page heading -->
+<h1>@ViewData["Title"]</h1>
+
+<!-- Display status message from TempData if available -->
 @if (TempData["StatusMessage"] != null)
 {
     <div class="alert alert-info">@TempData["StatusMessage"]</div>
 }
 
-<h2>Pending Meters</h2>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Serial Number</th>
-            <th>Installation Date</th>
-            <th>Customer</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var meter in Model.PendingMeters)
-        {
-            <tr>
-                <td>@meter.SerialNumber</td>
-                <td>@meter.InstallationDate.ToString("yyyy-MM-dd")</td>
-                <td>@meter.CustomerName</td>
-                <td>
-                    <form asp-action="Approve" method="post" class="d-inline">
-                        <input type="hidden" name="id" value="@meter.Id" />
-                        <button type="submit" class="btn btn-success btn-sm">Approve</button>
-                    </form>
-                    <form asp-action="Reject" method="post" class="d-inline" onsubmit="return confirm('Reject this meter?');">
-                        <input type="hidden" name="id" value="@meter.Id" />
-                        <button type="submit" class="btn btn-danger btn-sm">Reject</button>
-                    </form>
-                    <form asp-action="DeleteConfirmed" method="post" onsubmit="return confirm('Are you sure?');">
-                        <input type="hidden" name="id" value="@meter.Id" />
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
-                </td>
+<!-- Display new meter requests if any -->
+@if (Model.PendingMeterRequests != null && Model.PendingMeterRequests.Any())
+{
+    <!-- Render the partial view _NewMeterRequests passing the pending requests -->
+    @await Html.PartialAsync("_NewMeterRequests", Model.PendingMeterRequests)
+}
+else
+{
+    <!-- Message shown when there are no new meter requests -->
+    <p class="text-muted">There are no new meter requests.</p>
+}
 
-            </tr>
-        }
-    </tbody>
-</table>
+<!-- Display meters pending approval if any -->
+@if (Model.PendingMeters != null && Model.PendingMeters.Any())
+{
+    <!-- Render the partial view _PendingMeters passing the pending meters -->
+    @await Html.PartialAsync("_PendingMeters", Model.PendingMeters)
+}
+else
+{
+    <!-- Message shown when there are no meters awaiting approval -->
+    <p class="text-muted">There are no meters awaiting approval.</p>
+}
 
-<h2>Active Meters</h2>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Serial Number</th>
-            <th>Installation Date</th>
-            <th>Customer</th>
-            <th>Last Consumption</th>
-            <th>Last Reading</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Actions</th>
-            <th>Invoice</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var meter in Model.ActiveMeters)
-        {
-            var lastConsumption = meter.LastConsumption;
-
-            <tr>
-                <td>@meter.SerialNumber</td>
-                <td>@meter.InstallationDate.ToString("dd/MM/yyyy")</td>
-                <td>@meter.CustomerName</td>
-                <td>
-                    @(lastConsumption != null ? lastConsumption.Volume.ToString("N2") : "No consumption")
-                </td>
-                <td>
-                    @(lastConsumption != null ? lastConsumption.Reading.ToString() : "No reading")
-                </td>
-                <td>
-                    @(lastConsumption != null ? lastConsumption.Date.ToString("dd/MM/yyyy") : "-")
-                </td>
-                <td>
-                    @if (meter.IsActive)
-                    {
-                        <span class="text-success">Active</span>
-                    }
-                    else
-                    {
-                        <span class="text-warning">Pending Approval</span>
-                    }
-                </td>
-                <td>
-                    <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this meter?');">
-                        <input type="hidden" name="id" value="@meter.Id" />
-                        <button type="submit" class="btn btn-outline-danger btn-sm">Delete Meter</button>
-                    </form>
-                </td>
-                <td>
-                    @if (lastConsumption != null)
-                    {
-                        <form asp-action="IssueInvoice" asp-controller="Invoice" method="post" class="d-inline">
-                            <input type="hidden" name="consumptionId" value="@lastConsumption.Id" />
-                            <button type="submit" class="btn btn-primary btn-sm">Issue Invoice</button>
-                        </form>
-                    }
-                    else
-                    {
-                        <span class="text-muted">No consumption</span>
-                    }
-                </td>
-            </tr>
-        }
-
-    </tbody>
-</table>
-
-
+<!-- Display active meters if any -->
+@if (Model.ActiveMeters != null && Model.ActiveMeters.Any())
+{
+    <!-- Render the partial view _ActiveMeters passing the active meters -->
+    @await Html.PartialAsync("_ActiveMeters", Model.ActiveMeters)
+}
+else
+{
+    <!-- Message shown when there are no active meters -->
+    <p class="text-muted">There are no active meters to show.</p>
+}

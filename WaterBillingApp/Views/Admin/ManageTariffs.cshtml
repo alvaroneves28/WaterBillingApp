@@ -1,17 +1,23 @@
 ﻿@model IEnumerable<WaterBillingApp.Data.Entities.TariffBracket>
+
 @{
+    // Set the page title for display in the layout and header
     ViewData["Title"] = "Manage Tariffs";
 }
 
+<!-- Page heading -->
 <h1>@ViewData["Title"]</h1>
 
+<!-- Button to create a new tariff bracket -->
 <p>
     <a asp-action="Create" class="btn btn-primary">Create New Tariff</a>
 </p>
 
+<!-- Table listing all tariff brackets -->
 <table class="table table-striped">
     <thead>
         <tr>
+            <!-- Table headers -->
             <th>Min Volume</th>
             <th>Max Volume</th>
             <th>Price per m³</th>
@@ -19,14 +25,20 @@
         </tr>
     </thead>
     <tbody>
+        <!-- Loop through each tariff bracket in the model -->
         @foreach (var item in Model)
         {
             <tr>
+                <!-- Display minimum volume of the bracket -->
                 <td>@item.MinVolume</td>
+                <!-- Display maximum volume or "No limit" if null -->
                 <td>@(item.MaxVolume.HasValue? item.MaxVolume.Value.ToString() : "No limit")</td>
+                <!-- Display price formatted as currency -->
                 <td>@item.PricePerCubicMeter.ToString("C")</td>
                 <td>
+                    <!-- Edit button links to the edit page for this tariff -->
                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Edit</a>
+                    <!-- Delete button links to the delete confirmation page -->
                     <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Delete</a>
                 </td>
             </tr>

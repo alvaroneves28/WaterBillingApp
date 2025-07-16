@@ -1,44 +1,69 @@
 ﻿@model WaterBillingApp.Models.CustomerDashboardViewModel
 
 @{
+    // Set the page title shown in the layout and browser tab
     ViewData["Title"] = "Dashboard";
 }
 
-<h1>Welcome, @Model.CustomerName!</h1>
-@if (TempData["StatusMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["StatusMessage"]
-    </div>
-}
-@if (Model.Notifications.Any())
-{
-    <div class="alert alert-info">
-        <strong>New Notifications:</strong>
-        <ul>
-            @foreach (var notif in Model.Notifications)
-            {
-                <li>@notif.Message (@notif.CreatedAt.ToString("dd/MM/yyyy HH:mm"))</li>
-            }
-        </ul>
-    </div>
-}
+<!-- Main container with top margin -->
+<div class="container mt-4">
 
-@if (Model.HasPendingInvoice)
-{
-    <div class="alert alert-warning">
-        You have a pending invoice to pay.
-        <a asp-controller="Invoice" asp-action="DetailsForCustomer" asp-route-id="@Model.PendingInvoiceId" class="btn btn-warning btn-sm">
-            View Invoice
-        </a>
+    <!-- Personalized greeting for the logged-in customer -->
+    <h2 class="mb-3">Welcome, @Model.CustomerName!</h2>
+
+    <!-- Show success status message if available in TempData -->
+    @if (TempData["StatusMessage"] != null)
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["StatusMessage"]
+        </div>
+    }
+
+    <!-- If the customer has any notifications, display them in an info alert -->
+    @if (Model.Notifications.Any())
+    {
+        <div class="alert alert-info" role="alert">
+            <!-- Section header with bell icon -->
+            <h5 class="mb-2"><i class="bi bi-bell-fill"></i> New Notifications</h5>
+
+            <!-- List of notifications with timestamps -->
+            <ul class="mb-0 ps-3">
+                @foreach (var notif in Model.Notifications)
+                {
+                    <li>
+                        @notif.Message
+                        <small class="text-muted d-block">@notif.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+
+    <!-- Show alert if customer has a pending invoice -->
+    @if (Model.HasPendingInvoice)
+    {
+        <div class="alert alert-warning d-flex justify-content-between align-items-center" role="alert">
+            <span>You have a pending invoice to pay.</span>
+            <!-- Link to view invoice details -->
+            <a asp-controller="Invoice" asp-action="DetailsForCustomer" asp-route-id="@Model.PendingInvoiceId" class="btn btn-sm btn-outline-dark">
+                View Invoice
+            </a>
+        </div>
+    }
+    else
+    {
+        <!-- Confirmation alert if no pending invoices -->
+        <div class="alert alert-secondary" role="alert">
+            <i class="bi bi-check-circle-fill text-success me-2"></i>No pending invoices.
+        </div>
+    }
+
+    <!-- Horizontal divider for visual separation -->
+    <hr />
+
+    <!-- Action buttons with spacing for quick navigation -->
+    <div class="d-flex gap-2">
+        <a asp-action="Meters" class="btn btn-primary"><i class="bi bi-speedometer2 me-1"></i> My Meters</a>
+        <a asp-action="Invoices" class="btn btn-outline-secondary"><i class="bi bi-receipt me-1"></i> Invoice History</a>
     </div>
-}
-else
-{
-    <p>You have no pending invoices.</p>
-}
-
-<hr />
-
-<a asp-action="Meters" class="btn btn-primary">My Meters</a>
-<a asp-action="Invoices" class="btn btn-secondary">Invoice History</a>
+</div>

@@ -1,31 +1,50 @@
 ﻿@model WaterBillingApp.Models.RegisterViewModel
+
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "Register"; // Sets the page title for layout
 }
 
-<h1>Register</h1>
+<!-- Page title with icon -->
+<h1 class="mb-4">
+    <i class="bi bi-person-plus-fill me-2"></i> Register new account
+</h1>
+
+<!-- Display a success message if registration was successful -->
 @if (ViewBag.StatusMessage != null)
 {
-    <div class="alert alert-success">
-        @ViewBag.StatusMessage
+    <div class="alert alert-success d-flex align-items-center" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <div>@ViewBag.StatusMessage</div>
     </div>
 }
-<form asp-action="Register" method="post">
-    <div class="form-group">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
+
+<!-- Registration form -->
+<form asp-action="Register" method="post" novalidate>
+    <!-- Email field -->
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+            <input asp-for="Email" class="form-control" placeholder="you@example.com" />
+        </div>
         <span asp-validation-for="Email" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label asp-for="FullName"></label>
-        <input asp-for="FullName" class="form-control" />
+    <!-- Full name field -->
+    <div class="mb-3">
+        <label asp-for="FullName" class="form-label"></label>
+        <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+            <input asp-for="FullName" class="form-control" placeholder="Your full name" />
+        </div>
         <span asp-validation-for="FullName" class="text-danger"></span>
     </div>
-    <div class="form-group">
-        <label asp-for="Role"></label>
-        <select asp-for="Role" class="form-control">
-            <option value="">Selecione uma role</option>
+
+    <!-- Role selection dropdown -->
+    <div class="mb-3">
+        <label asp-for="Role" class="form-label"></label>
+        <select asp-for="Role" class="form-select">
+            <option value="">Select a role</option>
             <option value="Admin">Admin</option>
             <option value="Customer">Customer</option>
             <option value="Employee">Employee</option>
@@ -34,44 +53,69 @@
         <span asp-validation-for="Role" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label asp-for="NIF"></label>
-        <input asp-for="NIF" class="form-control" />
+    <!-- NIF field (e.g. taxpayer ID) -->
+    <div class="mb-3">
+        <label asp-for="NIF" class="form-label"></label>
+        <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-credit-card-2-front-fill"></i></span>
+            <input asp-for="NIF" class="form-control" placeholder="Your NIF" />
+        </div>
         <span asp-validation-for="NIF" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label asp-for="Address"></label>
-        <input asp-for="Address" class="form-control" />
+    <!-- Address field -->
+    <div class="mb-3">
+        <label asp-for="Address" class="form-label"></label>
+        <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
+            <input asp-for="Address" class="form-control" placeholder="Your address" />
+        </div>
         <span asp-validation-for="Address" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label asp-for="Phone"></label>
-        <input asp-for="Phone" class="form-control" />
+    <!-- Phone number field -->
+    <div class="mb-3">
+        <label asp-for="Phone" class="form-label"></label>
+        <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
+            <input asp-for="Phone" class="form-control" placeholder="Your phone number" />
+        </div>
         <span asp-validation-for="Phone" class="text-danger"></span>
     </div>
 
-    <div class="form-check mb-3">
-        <input asp-for="IsActive" class="form-check-input" type="checkbox" />
-        <label asp-for="IsActive" class="form-check-label"></label>
+    <!-- Active user checkbox -->
+    <div class="form-check mb-4">
+        <input asp-for="IsActive" class="form-check-input" type="checkbox" id="IsActive" />
+        <label asp-for="IsActive" class="form-check-label" for="IsActive">Active user</label>
     </div>
 
-    <div class="form-group">
-        <label asp-for="Password"></label>
-        <input asp-for="Password" class="form-control" type="password" />
+    <!-- Password field -->
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label"></label>
+        <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+            <input asp-for="Password" class="form-control" type="password" placeholder="Create a password" />
+        </div>
         <span asp-validation-for="Password" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label asp-for="ConfirmPassword"></label>
-        <input asp-for="ConfirmPassword" class="form-control" type="password" />
+    <!-- Confirm password field -->
+    <div class="mb-4">
+        <label asp-for="ConfirmPassword" class="form-label"></label>
+        <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+            <input asp-for="ConfirmPassword" class="form-control" type="password" placeholder="Confirm your password" />
+        </div>
         <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-primary">Register</button>
+    <!-- Submit button -->
+    <button type="submit" class="btn btn-lg btn-primary w-100">
+        <i class="bi bi-box-arrow-in-right me-2"></i> Register
+    </button>
 </form>
 
+<!-- Include client-side validation scripts -->
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

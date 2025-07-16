@@ -1,3 +1,5 @@
 ﻿@{
-    Layout = "_Layout";
+    Layout = User.Identity != null && User.Identity.IsAuthenticated
+        ? "_Layout"
+        : "_LayoutMinimal";
 }

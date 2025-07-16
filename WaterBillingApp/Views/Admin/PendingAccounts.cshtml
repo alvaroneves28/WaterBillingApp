@@ -1,22 +1,33 @@
 ﻿@using WaterBillingApp.Data.Entities
 @model IEnumerable<Notification>
 
+<!-- Page heading -->
 <h2>Pending Account Creations</h2>
 
+<!-- Check if there are no notifications -->
 @if (!Model.Any())
 {
+    <!-- Message shown when no new account requests exist -->
     <p>No new account requests.</p>
 }
 else
 {
+    <!-- List group to display all pending account notifications -->
     <ul class="list-group">
+        <!-- Loop through each notification -->
         @foreach (var notif in Model)
         {
             <li class="list-group-item">
+                <!-- Display the notification message -->
                 @notif.Message <br />
+                <!-- Display the creation date/time in dd/MM/yyyy HH:mm format -->
                 <small class="text-muted">@notif.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+
+                <!-- Form to trigger account creation based on the notification -->
                 <form asp-action="CreateUserFromNotification" method="post" class="mt-2">
+                    <!-- Hidden field to pass the notification ID to the controller -->
                     <input type="hidden" name="notificationId" value="@notif.Id" />
+                    <!-- Submit button to create the account -->
                     <button type="submit" class="btn btn-primary btn-sm float-end">Create Account</button>
                 </form>
             </li>

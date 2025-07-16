@@ -1,12 +1,19 @@
 ﻿@model WaterBillingApp.Data.Entities.Customer
 
-<h1>Confirmar eliminação</h1>
+<!-- Page heading -->
+<h1>Confirm Deletion</h1>
 
-<p>Tem certeza que deseja apagar o cliente: <strong>@Model.FullName</strong>?</p>
+<!-- Confirmation message showing the customer's full name -->
+<p>Are you sure you want to delete the customer: <strong>@Model.FullName</strong>?</p>
 
+<!-- Form to confirm deletion -->
 <form asp-action="Delete" method="post">
+    <!-- Hidden input to send the customer's ID -->
     <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Sim, apagar</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
-</form>
 
+    <!-- Submit button to confirm deletion -->
+    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+
+    <!-- Cancel button to go back to the customer list -->
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

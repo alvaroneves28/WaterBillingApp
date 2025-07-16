@@ -1,14 +1,17 @@
 ﻿@using WaterBillingApp.Data.Entities
-@model ApplicationUser
+@model ApplicationUser // Sets the model for this view as an ApplicationUser object
 
 @{
-    ViewData["Title"] = "Eliminar Utilizador";
+    // Sets the page title (used by the main layout)
+    ViewData["Title"] = "Delete User";
 }
 
 <h1>@ViewData["Title"]</h1>
 
+<!-- Confirmation message -->
 <h3>Are you sure you want to delete this user?</h3>
 
+<!-- Display of key information about the user to be deleted -->
 <div>
     <dl class="row">
         <dt class="col-sm-2">Email</dt>
@@ -19,10 +22,15 @@
     </dl>
 </div>
 
+<!-- Form to confirm the deletion of the user -->
 <form asp-action="DeleteUserConfirmed" method="post">
-    @Html.AntiForgeryToken()
+    @Html.AntiForgeryToken() <!-- Anti-forgery token to prevent CSRF -->
+    <!-- Hidden field with the user's ID -->
     <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Delete</button>
-    <a asp-action="ManageUsers" class="btn btn-secondary">Cancelar</a>
-</form>
 
+    <!-- Button to submit the deletion -->
+    <button type="submit" class="btn btn-danger">Delete</button>
+
+    <!-- Button to cancel and return to the user management page -->
+    <a asp-action="ManageUsers" class="btn btn-secondary">Cancel</a>
+</form>

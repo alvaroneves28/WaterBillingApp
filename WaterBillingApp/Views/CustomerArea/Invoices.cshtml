@@ -1,19 +1,26 @@
-﻿@model WaterBillingApp.Models.CustomerInvoicesViewModel
+﻿@using WaterBillingApp.Data.Entities
+@model WaterBillingApp.Models.CustomerInvoicesViewModel
 
 @{
+    // Set the page title shown in the layout and browser tab
     ViewData["Title"] = "Invoice History";
 }
 
+<!-- Page heading showing which customer's invoices are displayed -->
 <h1>Invoice History for @Model.CustomerName</h1>
 
+<!-- Check if the customer has any invoices -->
 @if (!Model.Invoices.Any())
 {
+    <!-- Informative alert when no invoices are present -->
     <div class="alert alert-info">You have no invoices.</div>
 }
 else
 {
-    @Html.AntiForgeryToken() <!-- Mover o token para dentro do else -->
+    <!-- Anti-forgery token for form security (needed for POST actions) -->
+    @Html.AntiForgeryToken()
 
+    <!-- Table displaying invoice details -->
     <table class="table table-bordered table-hover">
         <thead>
             <tr>
@@ -25,39 +32,63 @@ else
             </tr>
         </thead>
         <tbody>
+            <!-- Loop through each invoice and render a row -->
             @foreach (var invoice in Model.Invoices)
             {
                 <tr>
                     <td>@invoice.Id</td>
+                    <!-- Format date as dd/MM/yyyy -->
                     <td>@invoice.IssueDate.ToString("dd/MM/yyyy")</td>
+                    <!-- Format amount as currency -->
                     <td>@invoice.TotalAmount.ToString("C")</td>
-                    <td>@invoice.Status.ToString()</td>
                     <td>
-                        <a asp-controller="Invoice" asp-action="DetailsForCustomer" asp-route-id="@invoice.Id" class="btn btn-sm btn-primary">View</a>
-                        <button class="btn btn-outline-success btn-sm" onclick="openSignatureModal(@invoice.Id)">
-                            Assinar e Descarregar
-                        </button>
+                        <!-- Display status badge with color based on invoice status -->
+                        <span class="badge bg-@(
+                              invoice.Status == InvoiceStatus.Approved ? "success" :
+                              invoice.Status == InvoiceStatus.Pending ? "warning" :
+                              "secondary")">
+                    @invoice.Status
+                </span>
+            </td>
+            <td>
+                <!-- Link to view invoice details -->
+                <a asp-controller="Invoice" asp-action="DetailsForCustomer" asp-route-id="@invoice.Id"
+                   class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-eye"></i> View
+                </a>
+
+                        <!-- If invoice is pending, show button to open signature modal -->
+                @if (invoice.Status == InvoiceStatus.Pending)
+                        {
+                            <button class="btn btn-sm btn-outline-success" onclick="openSignatureModal(@invoice.Id)">
+                                <i class="bi bi-pencil"></i> Sign & Download
+                            </button>
+                        }
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 
-    <!-- Modal só é renderizado se houver faturas -->
+    <!-- Modal dialog for signing the invoice -->
     <div class="modal fade" id="signatureModal" tabindex="-1" role="dialog" aria-labelledby="signatureModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content p-3">
                 <div class="modal-header">
-                    <h5 class="modal-title">Assinar Fatura</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    <h5 class="modal-title">Sign Invoice</h5>
+                    <!-- Button to close the modal -->
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <!-- Canvas element where customer will draw their signature -->
                     <canvas id="signature" style="border:1px solid #ccc; width: 100%; height: 200px;"></canvas>
+                    <!-- Hidden input to hold the currently selected invoice ID -->
                     <input type="hidden" id="selectedInvoiceId" />
                 </div>
                 <div class="modal-footer">
-                    <button id="downloadButton" class="btn btn-primary">Confirmar e Descarregar</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <!-- Button to confirm signature and trigger download -->
+                    <button id="downloadButton" class="btn btn-primary">Confirm & Download</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>
@@ -65,75 +96,82 @@ else
 }
 
 @section Scripts {
-<script>
-    let signatureComponent;
+    <script>
+        let signatureComponent;
 
-    function openSignatureModal(invoiceId) {
-        document.getElementById("selectedInvoiceId").value = invoiceId;
+        // Function to open the signature modal and initialize the signature pad
+        function openSignatureModal(invoiceId) {
+            // Store invoice ID in hidden input for later use
+            document.getElementById("selectedInvoiceId").value = invoiceId;
 
-        // Limpar e recriar o conteúdo do div, garantindo que está "fresco"
-        const signatureDiv = document.getElementById("signature");
-        signatureDiv.innerHTML = ""; // elimina canvas anteriores
+            const signatureDiv = document.getElementById("signature");
+            signatureDiv.innerHTML = ""; // Clear previous signature if any
 
-        // Inicializa o componente Signature APENAS quando o modal é aberto
-        signatureComponent = new ej.inputs.Signature({
-            width: '100%',
-            height: '200px'
-        });
+            // Initialize Syncfusion Signature component with set dimensions
+            signatureComponent = new ej.inputs.Signature({
+                width: '100%',
+                height: '200px'
+            });
 
-        try {
-            signatureComponent.appendTo(signatureDiv);
-            console.log("Signature component initialized com sucesso.");
-        } catch (err) {
-            console.error("Erro ao inicializar assinatura:", err);
-            alert("Ocorreu um erro ao preparar a assinatura.");
-            return;
-        }
-
-        // Abrir modal Bootstrap
-        const modalElement = document.getElementById('signatureModal');
-        const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
-        modal.show();
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-        document.getElementById("downloadButton")?.addEventListener("click", function () {
-            if (!signatureComponent || signatureComponent.isEmpty()) {
-                alert("Por favor, assine antes de continuar.");
+            try {
+                // Append signature pad to the canvas element
+                signatureComponent.appendTo(signatureDiv);
+            } catch (err) {
+                alert("An error occurred while initializing the signature component.");
                 return;
             }
 
-            const data = signatureComponent.getSignature();
-            const invoiceId = document.getElementById("selectedInvoiceId").value;
+            // Show the Bootstrap modal
+            const modalElement = document.getElementById('signatureModal');
+            const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+            modal.show();
+        }
 
-            fetch('/Invoice/DownloadSignedPdf', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                },
-                body: JSON.stringify({ invoiceId: parseInt(invoiceId), assinaturaBase64: data })
-            })
-            .then(response => {
-                if (!response.ok) throw new Error("Erro ao gerar PDF");
-                return response.blob();
-            })
-            .then(blob => {
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `Fatura_${invoiceId}.pdf`;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
+        // Wait until DOM is fully loaded to add event listener for download button
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("downloadButton")?.addEventListener("click", function () {
+                // Check if signature component exists and is not empty
+                if (!signatureComponent || signatureComponent.isEmpty()) {
+                    alert("Please provide your signature before proceeding.");
+                    return;
+                }
 
-                const modalElement = document.getElementById('signatureModal');
-                const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
-                modal.hide();
-            })
-            .catch(error => alert(error));
+                // Get signature data as base64 string
+                const data = signatureComponent.getSignature();
+                // Get the selected invoice ID
+                const invoiceId = document.getElementById("selectedInvoiceId").value;
+
+                // Send signature and invoice ID to server to generate signed PDF
+                fetch('/Invoice/DownloadSignedPdf', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Include anti-forgery token for security
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({ invoiceId: parseInt(invoiceId), assinaturaBase64: data })
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error("Error generating the signed PDF.");
+                    return response.blob();
+                })
+                .then(blob => {
+                    // Create a temporary URL for the PDF blob and trigger a download
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `Invoice_${invoiceId}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+
+                    // Hide the modal after successful download
+                    const modalElement = document.getElementById('signatureModal');
+                    const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+                    modal.hide();
+                })
+                .catch(error => alert(error.message)); // Alert on errors
+            });
         });
-    });
-</script>
+    </script>
 }
-

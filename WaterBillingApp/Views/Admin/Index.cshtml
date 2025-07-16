@@ -1,10 +1,12 @@
 ﻿@{
-    ViewData["Title"] = "Admin Panel";
+    // Retrieve the number of pending accounts from ViewData, defaulting to 0 if not present
     var pendingCount = (int)(ViewData["PendingAccountsCount"] ?? 0);
 }
 
+<!-- Display the page title -->
 <h1>@ViewData["Title"]</h1>
 
+<!-- Show a warning alert if there are any pending accounts -->
 @if (pendingCount > 0)
 {
     <div class="alert alert-warning">
@@ -12,37 +14,66 @@
     </div>
 }
 
+<!-- Welcome message for the admin dashboard -->
 <p>Welcome to the admin dashboard!</p>
 
-<div class="dropdown">
-    <button class="btn btn-primary dropdown-toggle" type="button" id="actionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-        Choose an action
-        @if (pendingCount > 0)
-        {
-            <span class="badge bg-danger ms-2">@pendingCount</span>
-        }
-    </button>
-    <ul class="dropdown-menu" aria-labelledby="actionDropdown">
-        <li>
-            <a class="dropdown-item" asp-controller="Account" asp-action="Register">Register new account</a>
-        </li>
-        <li>
-            <a class="dropdown-item" asp-controller="Customer" asp-action="Index">Manage customers</a>
-        </li>
-        <li>
-            <a class="dropdown-item" asp-controller="Admin" asp-action="ManageUsers">Manage users</a>
-        </li>
-        <li>
-            <a class="dropdown-item" asp-controller="Tariff" asp-action="ManageTariffs">Manage Tariffs</a>
-        </li>
-        <li>
-            <a class="dropdown-item" asp-controller="Admin" asp-action="PendingAccounts">
-                Pending Accounts
+<!-- Button to open the offcanvas sidebar with admin actions -->
+<button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#actionsOffcanvas" aria-controls="actionsOffcanvas">
+    Choose an action
+    <!-- Display a red badge with the count of pending accounts if any -->
+    @if (pendingCount > 0)
+    {
+        <span class="badge bg-danger ms-2">@pendingCount</span>
+    }
+</button>
+
+<!-- Offcanvas sidebar panel for admin actions -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="actionsOffcanvas" aria-labelledby="actionsOffcanvasLabel">
+    <div class="offcanvas-header">
+        <!-- Sidebar title -->
+        <h5 class="offcanvas-title" id="actionsOffcanvasLabel">Admin Actions</h5>
+        <!-- Button to close the offcanvas sidebar -->
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <!-- List group containing different admin links -->
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <!-- Link to register a new account -->
+                <a asp-controller="Account" asp-action="Register" class="stretched-link text-decoration-none">
+                    <i class="bi bi-person-plus-fill me-2"></i> Register new account
+                </a>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <!-- Link to manage customers -->
+                <a asp-controller="Customer" asp-action="Index" class="stretched-link text-decoration-none">
+                    <i class="bi bi-people-fill me-2"></i> Manage customers
+                </a>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <!-- Link to manage users -->
+                <a asp-controller="Admin" asp-action="ManageUsers" class="stretched-link text-decoration-none">
+                    <i class="bi bi-shield-lock-fill me-2"></i> Manage users
+                </a>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <!-- Link to manage tariffs -->
+                <a asp-controller="Tariff" asp-action="ManageTariffs" class="stretched-link text-decoration-none">
+                    <i class="bi bi-currency-dollar me-2"></i> Manage Tariffs
+                </a>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center position-relative">
+                <!-- Link to view pending accounts -->
+                <a asp-controller="Admin" asp-action="PendingAccounts" class="stretched-link text-decoration-none">
+                    <i class="bi bi-clock-history me-2"></i> Pending Accounts
+                </a>
+                <!-- Display a badge if there are pending accounts -->
                 @if (pendingCount > 0)
                 {
-                    <span class="badge bg-danger ms-2">@pendingCount</span>
+                    <span class="badge bg-danger rounded-pill">@pendingCount</span>
                 }
-            </a>
-        </li>
-    </ul>
+            </li>
+        </ul>
+    </div>
 </div>
+
