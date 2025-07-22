@@ -3,16 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using WaterBillingWebAPI.Data;
 
 #nullable disable
 
-namespace WaterBillingApp.Migrations
+namespace WaterBillingWebAPI.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(AppDbContext))]
+    [Migration("20250722135448_AddIsReadToInvoice")]
+    partial class AddIsReadToInvoice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -262,7 +266,6 @@ namespace WaterBillingApp.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Volume")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -341,7 +344,6 @@ namespace WaterBillingApp.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("TotalAmount")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -463,16 +465,13 @@ namespace WaterBillingApp.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal?>("MaxVolume")
-                        .HasPrecision(10, 3)
-                        .HasColumnType("decimal(10,3)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("MinVolume")
-                        .HasPrecision(10, 3)
-                        .HasColumnType("decimal(10,3)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("PricePerCubicMeter")
-                        .HasPrecision(10, 4)
-                        .HasColumnType("decimal(10,4)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -484,7 +483,7 @@ namespace WaterBillingApp.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -493,7 +492,7 @@ namespace WaterBillingApp.Migrations
                     b.HasOne("WaterBillingApp.Data.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -502,7 +501,7 @@ namespace WaterBillingApp.Migrations
                     b.HasOne("WaterBillingApp.Data.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -511,13 +510,13 @@ namespace WaterBillingApp.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("WaterBillingApp.Data.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -526,7 +525,7 @@ namespace WaterBillingApp.Migrations
                     b.HasOne("WaterBillingApp.Data.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -535,13 +534,12 @@ namespace WaterBillingApp.Migrations
                     b.HasOne("WaterBillingApp.Data.Entities.Meter", "Meter")
                         .WithMany("Consumptions")
                         .HasForeignKey("MeterId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("WaterBillingApp.Data.Entities.TariffBracket", "TariffBracket")
                         .WithMany()
-                        .HasForeignKey("TariffBracketId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("TariffBracketId");
 
                     b.Navigation("Meter");
 
@@ -552,8 +550,7 @@ namespace WaterBillingApp.Migrations
                 {
                     b.HasOne("WaterBillingApp.Data.Entities.ApplicationUser", "ApplicationUser")
                         .WithOne("Customer")
-                        .HasForeignKey("WaterBillingApp.Data.Entities.Customer", "ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("WaterBillingApp.Data.Entities.Customer", "ApplicationUserId");
 
                     b.Navigation("ApplicationUser");
                 });
@@ -563,7 +560,7 @@ namespace WaterBillingApp.Migrations
                     b.HasOne("WaterBillingApp.Data.Entities.Consumption", "Consumption")
                         .WithOne("Invoice")
                         .HasForeignKey("WaterBillingApp.Data.Entities.Invoice", "ConsumptionId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Consumption");
@@ -574,7 +571,7 @@ namespace WaterBillingApp.Migrations
                     b.HasOne("WaterBillingApp.Data.Entities.Customer", "Customer")
                         .WithMany("Meters")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Customer");

@@ -55,6 +55,8 @@ namespace WaterBillingApp.Data.Entities
         [StringLength(20)]
         public InvoiceStatus Status { get; set; }
 
+        public bool IsRead { get; set; } = false;
+
         /// <summary>
         /// Foreign key to the associated consumption record.
         /// </summary>

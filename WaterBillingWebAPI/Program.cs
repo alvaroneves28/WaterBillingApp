@@ -1,10 +1,11 @@
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Security.Claims;
 using System.Text;
 using WaterBillingApp.Data.Entities;
+using WaterBillingWebAPI.Data;
 
 namespace WaterBillingWebAPI
 {
@@ -17,7 +18,8 @@ namespace WaterBillingWebAPI
             // Add services to the container.
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+            // Swagger com suporte a JWT no header Authorization
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
@@ -25,9 +27,9 @@ namespace WaterBillingWebAPI
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description = @"JWT Authorization header using the Bearer scheme. 
-                        Enter 'Bearer' [space] and then your token.
-                        Example: 'Bearer 12345abcdef'",
+                    Description = @"JWT Authorization header usando o esquema Bearer. 
+                        Digite 'Bearer' [espaço] e o token.
+                        Exemplo: 'Bearer 12345abcdef'",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey,
@@ -43,8 +45,8 @@ namespace WaterBillingWebAPI
                                 Type = ReferenceType.SecurityScheme,
                                 Id = "Bearer"
                             },
-                            Scheme = "oauth2",
-                            Name = "Bearer",
+                            Scheme = "Bearer",
+                            Name = "Authorization",
                             In = ParameterLocation.Header,
                         },
                         new List<string>()
@@ -56,7 +58,25 @@ namespace WaterBillingWebAPI
             if (string.IsNullOrWhiteSpace(jwtKey))
                 throw new Exception("A chave JWT não foi encontrada no appsettings.json!");
 
-            builder.Services.AddAuthentication("Bearer")
+            // Configuração do Identity sem cookies, só IdentityCore
+            builder.Services.AddIdentityCore<ApplicationUser>(options =>
+            {
+                // Configurações do Identity, podes personalizar aqui
+                options.Password.RequireDigit = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 6;
+            })
+            .AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<AppDbContext>()
+            .AddDefaultTokenProviders();
+
+            // Autenticação JWT padrão (sem cookies)
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = "Bearer";
+                options.DefaultChallengeScheme = "Bearer";
+            })
             .AddJwtBearer("Bearer", options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -67,19 +87,18 @@ namespace WaterBillingWebAPI
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
                     ValidAudience = builder.Configuration["JwtSettings:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+                    NameClaimType = ClaimTypes.NameIdentifier,
+                    RoleClaimType = ClaimTypes.Role
                 };
             });
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
 
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // Pipeline HTTP
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -90,9 +109,9 @@ namespace WaterBillingWebAPI
             }
 
             app.UseHttpsRedirection();
+
             app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.MapControllers();
 
