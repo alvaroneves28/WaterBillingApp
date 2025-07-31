@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -8,6 +8,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Text;
 using WaterBillingApp.Data.Entities;
+using WaterBillingApp.Helpers;
 using WaterBillingWebAPI.Model;
 using WaterBillingWebAPI.Model.DTO;
 

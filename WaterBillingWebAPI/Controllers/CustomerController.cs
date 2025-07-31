@@ -8,11 +8,17 @@ using WaterBillingWebAPI.Model.DTO;
 
 namespace WaterBillingWebAPI.Controllers
 {
-    
+    [Route("api/customer")]
+    [ApiController]
     public class CustomerController : Controller
     {
         private readonly AppDbContext _context;
-        
+        public CustomerController(AppDbContext context)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+        }
+
+
         [HttpPost("consumptions")]
         public async Task<IActionResult> SubmitConsumption([FromBody] CreateConsumptionDTO dto)
         {
@@ -70,7 +76,7 @@ namespace WaterBillingWebAPI.Controllers
         }
 
 
-        [Authorize(Roles = "Client")]
+        [Authorize]
         [HttpGet("consumptions/history")]
         public async Task<IActionResult> GetConsumptionHistory()
         {
@@ -91,7 +97,7 @@ namespace WaterBillingWebAPI.Controllers
                 {
                     MeterId = c.MeterId,
                     Date = c.Date,
-                    Value = c.Volume
+                    Volume = c.Volume
                 })
                 .ToListAsync();
 
@@ -236,6 +242,30 @@ namespace WaterBillingWebAPI.Controllers
 
             return Ok(meters);
         }
+
+        [HttpGet("mine")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<MeterDTO>>> GetMyMeters()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var customer = await _context.Customers
+                .FirstOrDefaultAsync(c => c.ApplicationUserId == userId);
+
+            if (customer == null)
+                return Unauthorized();
+
+            var meters = await _context.Meters
+                .Where(m => m.CustomerId == customer.Id)
+                .Select(m => new MeterDTO
+                {
+                    Id = m.Id
+                })
+                .ToListAsync();
+
+            return Ok(meters);
+        }
+
 
     }
 }

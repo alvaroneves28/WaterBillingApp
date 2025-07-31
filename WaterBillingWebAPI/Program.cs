@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using System.Text;
 using WaterBillingApp.Data.Entities;
+using WaterBillingApp.Helpers;
 using WaterBillingWebAPI.Data;
 
 namespace WaterBillingWebAPI
@@ -13,6 +14,7 @@ namespace WaterBillingWebAPI
     {
         public static void Main(string[] args)
         {
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -96,6 +98,17 @@ namespace WaterBillingWebAPI
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            var smtpSettings = builder.Configuration.GetSection("SmtpSettings").Get<SmtpSettings>();
+            builder.Services.AddSingleton(smtpSettings);
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                options.ListenAnyIP(44328, listenOptions =>
+                {
+                    listenOptions.UseHttps();
+                });
+            });
+
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
             var app = builder.Build();
 
             // Pipeline HTTP

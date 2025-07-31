@@ -4,6 +4,6 @@
     {
         public int MeterId { get; set; }
         public DateTime Date { get; set; }
-        public decimal Value { get; set; }
+        public decimal Volume { get; set; }
     }
 }
