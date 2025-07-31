@@ -5,13 +5,13 @@ on:
     - master
 env:
   AZURE_WEBAPP_NAME: WatterbillingApp
-  AZURE_WEBAPP_PACKAGE_PATH: WaterBillingApp\published
+  AZURE_WEBAPP_PACKAGE_PATH: WaterBillingApp/published
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 8.0.x
   WORKING_DIRECTORY: WaterBillingApp
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET SDK
@@ -32,7 +32,7 @@ jobs:
         name: webapp
         path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
   deploy:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     needs: build
     steps:
     - name: Download artifact from build job
@@ -40,12 +40,10 @@ jobs:
       with:
         name: webapp
         path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-    - name: Debug environment variables
-      run: env
     - name: Azure Login
       uses: azure/login@v2
       with:
-        creds: ${{ secrets.WATTERBILLINGAPP_SPN }}
+        creds: ${{ secrets.WatterbillingApp_SPN }}
     - name: Deploy to Azure WebApp
       uses: azure/webapps-deploy@v2
       with:
