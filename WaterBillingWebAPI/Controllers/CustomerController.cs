@@ -163,6 +163,7 @@ namespace WaterBillingWebAPI.Controllers
             var meterRequest = new MeterRequest
             {
                 RequesterName = requestDto.Name,
+                RequesterEmail = requestDto.Email,
                 Address = requestDto.Address,
                 NIF = requestDto.NIF,
                 Phone = requestDto.PhoneNumber,

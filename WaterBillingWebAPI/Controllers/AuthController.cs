@@ -88,16 +88,62 @@ namespace WaterBillingWebAPI.Controllers
                 return Ok(new { message = "If the email is registered, a reset link has been sent." });
             }
 
+            // Gerar token
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-            var encodedToken = WebUtility.UrlEncode(token);
-            var resetLink = $"{_configuration["AppSettings:ClientUrl"]}/reset-password?email={model.Email}&token={encodedToken}";
+            // Converter token para Base64 URL-safe
+            var tokenBytes = Encoding.UTF8.GetBytes(token);
+            var tokenBase64 = Convert.ToBase64String(tokenBytes)
+                .Replace('+', '-')   // substituir + por -
+                .Replace('/', '_')   // substituir / por _
+                .TrimEnd('=');       // remover padding
 
-            await _emailSender.SendEmailAsync(model.Email, "Password Reset",
-                $"Click the following link to reset your password: <a href='{resetLink}'>Reset Password</a>");
+            // Criar deep link com token URL-safe
+            var resetLink = $"waterbilling://reset-password?token={tokenBase64}&email={Uri.EscapeDataString(model.Email)}";
+
+            // Email com link clicável
+            var emailBody = $@"
+<html>
+<body style='font-family: Arial, sans-serif;'>
+    <h2>Password Recovery</h2>
+    <p>You requested to reset your password for your Water Billing account.</p>
+    <p>Click the button below to reset your password in the app:</p>
+    <p style='margin: 30px 0;'>
+        <a href='{resetLink}' 
+           style='background-color: #007bff; 
+                  color: white; 
+                  padding: 12px 30px; 
+                  text-decoration: none; 
+                  border-radius: 5px; 
+                  display: inline-block;
+                  font-weight: bold;'>
+            Reset Password
+        </a>
+    </p>
+    <p style='color: #666; font-size: 12px;'>
+        If the button doesn't work, copy and paste this link:<br/>
+        <span style='color: #007bff;'>{resetLink}</span>
+    </p>
+    <p style='color: #666; font-size: 12px;'>
+        This link expires in 1 hour.
+    </p>
+    <hr style='margin: 30px 0; border: none; border-top: 1px solid #ddd;'/>
+    <p style='color: #999; font-size: 11px;'>
+        If you didn't request this, please ignore this email.
+    </p>
+</body>
+</html>
+";
+
+            await _emailSender.SendEmailAsync(
+                model.Email,
+                "Password Reset - Water Billing App",
+                emailBody
+            );
 
             return Ok(new { message = "If the email is registered, a reset link has been sent." });
         }
+
 
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO model)
@@ -109,12 +155,15 @@ namespace WaterBillingWebAPI.Controllers
             if (user == null)
                 return BadRequest(new { message = "Invalid request." });
 
-            var result = await _userManager.ResetPasswordAsync(user, WebUtility.UrlDecode(model.Token), model.NewPassword);
+            
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
             return Ok(new { message = "Password reset successful." });
         }
+
 
 
 
